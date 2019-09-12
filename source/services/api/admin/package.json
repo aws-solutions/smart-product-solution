@@ -1,0 +1,47 @@
+{
+    "name": "smart-product-admin-service",
+    "description": "The administration microservice for the smart product solution",
+    "main": "index.js",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+        "aws-serverless-express": "^3.3.6",
+        "body-parser": "^1.17.1",
+        "express": "^4.15.2",
+        "cors": "^2.8.3",
+        "authorizer": "file:../../../resources/authorizer",
+        "logger": "file:../../../resources/logger",
+        "moment": "*",
+        "underscore": "*"
+    },
+    "devDependencies": {
+        "aws-sdk": "*",
+        "chai": "*",
+        "sinon": "*",
+        "sinon-chai": "*",
+        "mocha": "*",
+        "aws-sdk-mock": "*",
+        "proxyquire": "*"
+    },
+    "scripts": {
+        "pretest": "rm -rf package-lock.json && npm install",
+        "test": "mocha lib/*.spec.js",
+        "prestart": "rm -rf package-lock.json && npm install",
+        "start": "node index.js",
+        "build:init": "rm -rf package-lock.json && rm -rf dist && rm -rf node_modules",
+        "build:zip": "zip -rq smart-product-admin-service.zip . -x template.yml",
+        "build:dist": "mkdir dist && mv smart-product-admin-service.zip dist/",
+        "build": "npm run build:init && npm install --production && npm run build:zip && npm run build:dist",
+        "local:depfix": "rm -rf ./node_modules/authorizer && rm -rf ./node_modules/logger && cp -R ../../resources/authorizer ./node_modules/authorizer && cp -R ../../resources/logger ./node_modules/logger",
+        "local:test": "sam local invoke 'AdminService' -e ../tests/admin/get-user-event.json --env-vars ../tests/env-vars.json",
+        "local:api": "sam local start-api --env-vars ../tests/env-vars.json"
+    },
+    "bundledDependencies": [
+        "aws-serverless-express",
+        "body-parser",
+        "express",
+        "cors",
+        "moment",
+        "underscore"
+    ]
+}

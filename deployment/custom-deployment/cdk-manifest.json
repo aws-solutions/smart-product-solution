@@ -1,0 +1,30 @@
+{
+    "default": {
+        "version": "v0.0.1",
+        "sendAnonymousUsage": true,
+        "api": {
+            "deploy": true
+        },
+        "defender": {
+            "deploy": true
+        },
+        "events": {
+            "deploy": true,
+            "env": {
+                "eventTopic": "smartproduct/event"
+            }
+        },
+        "jitr": {
+            "deploy": true
+        },
+        "ownerapp": {
+            "deploy": true
+        },
+        "telemetry": {
+            "deploy": true,
+            "env": {
+                "telemetryTopic": "smartproduct/telemetry"
+            }
+        }
+    }
+}

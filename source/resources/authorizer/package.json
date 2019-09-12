@@ -1,0 +1,37 @@
+{
+    "name": "authorizer",
+    "version": "0.0.1",
+    "description": "Authorizer is an auxiliary class to create authentication and authorization claim ticket for solution services",
+    "author": {
+        "name": "aws-solutions-builder"
+    },
+    "private": true,
+    "main": "./auth.common.js",
+    "dependencies": {
+        "aws-sdk": "*",
+        "moment": "*",
+        "underscore": "*",
+        "jsonwebtoken": "*",
+        "jwk-to-pem": "*",
+        "request": "*",
+        "js-base64": "*",
+        "logger": "file:../logger"
+    },
+    "devDependencies": {
+        "chai": "*",
+        "sinon": "*",
+        "sinon-chai": "*",
+        "mocha": "*",
+        "aws-sdk-mock": "*",
+        "npm-run-all": "*",
+        "proxyquire": "*"
+    },
+    "scripts": {
+        "pretest": "rm -rf package-lock.json && rm -rf node_modules && npm install",
+        "test": "mocha lib/*.spec.js",
+        "prestart": "rm -rf package-lock.json && npm install",
+        "start": "node index.js",
+        "build:init": "rm -rf package-lock.json && rm -rf dist && rm -rf node_modules",
+        "build": "npm run build:init && npm install --production"
+    }
+}

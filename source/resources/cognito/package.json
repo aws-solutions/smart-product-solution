@@ -1,0 +1,30 @@
+{
+    "name": "cognito-trigger",
+    "description": "Smart Product solution Cognito trigger Lambda function",
+    "main": "index.js",
+    "author": {
+        "name": "aws-solutions-builder"
+    },
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+        "moment": "*",
+        "logger": "file:../logger"
+    },
+    "devDependencies": {
+        "chai": "*",
+        "mocha": "*",
+        "aws-sdk-mock": "*"
+    },
+    "scripts": {
+        "pretest": "rm -rf package-lock.json && rm -rf dist && npm install",
+        "test": "mocha *.spec.js",
+        "build:init": "rm -rf package-lock.json && rm -rf dist && rm -rf node_modules",
+        "build:zip": "zip -rq smart-product-cognito.zip . -x template.yml",
+        "build:dist": "mkdir dist && mv smart-product-cognito.zip dist/",
+        "build": "npm run build:init && npm install --production && npm run build:zip && npm run build:dist"
+    },
+    "bundledDependencies": [
+        "moment"
+    ]
+}

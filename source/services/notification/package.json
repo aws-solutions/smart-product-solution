@@ -1,0 +1,59 @@
+{
+  "name": "smart-product-notification-service",
+  "description": "The notification microservice for the smart product solution",
+  "main": "index.js",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "authorizer": "file:../../resources/authorizer/",
+    "logger": "file:../../resources/logger/",
+    "moment": "*",
+    "randomstring": "*",
+    "underscore": "^1.9.1"
+  },
+  "devDependencies": {
+    "aws-sdk": "*",
+    "aws-sdk-mock": "*",
+    "chai": "*",
+    "mocha": "*",
+    "npm-run-all": "*",
+    "proxyquire": "*",
+    "sinon": "*",
+    "sinon-chai": "*",
+    "sinon-test": "^2.4.0"
+  },
+  "scripts": {
+    "pretest": "rm -rf package-lock.json && rm -rf node_modules && npm install",
+    "test": "env AWS_REGION='test', REGISTRATION_TBL='table1', SETTINGS_TBL='table2', IDP='userPoolID' mocha lib/alert.spec.js",
+    "prestart": "rm -rf package-lock.json && npm install",
+    "start": "node index.js",
+    "build:init": "rm -rf package-lock.json && rm -rf dist && rm -rf node_modules",
+    "build:zip": "zip -rq smart-product-notification-service.zip . -x template.yml",
+    "build:dist": "mkdir dist && mv smart-product-notification-service.zip dist/",
+    "build": "npm run build:init && npm install --production && npm run build:zip && npm run build:dist",
+    "local:depfix": "rm -rf ./node_modules/authorizer && rm -rf ./node_modules/logger && cp -R ../../resources/authorizer ./node_modules/authorizer && cp -R ../../resources/logger ./node_modules/logger",
+    "local:api": "sam local start-api --env-vars ../tests/env-vars.json"
+  },
+  "bundledDependencies": [
+    "moment",
+    "underscore",
+    "colors"
+  ],
+  "eslintConfig": {
+    "extends": "strongloop",
+    "env": {
+      "node": true,
+      "mocha": true
+    },
+    "parserOptions": {
+      "ecmaVersion": 8
+    },
+    "rules": {
+      "max-len": [
+        2,
+        120,
+        8
+      ]
+    }
+  }
+}

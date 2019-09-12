@@ -1,0 +1,35 @@
+{
+  "name": "smart-product-telemetry",
+  "description": "A Lambda function for the smart product telemetry transformation",
+  "main": "index.js",
+  "author": {
+    "name": "aws-solutions-builder"
+  },
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "moment": "*",
+    "logger": "file:../../resources/logger/"
+  },
+  "devDependencies": {
+    "chai": "*",
+    "sinon": "*",
+    "sinon-chai": "*",
+    "mocha": "*",
+    "npm-run-all": "*",
+    "proxyquire": "*"
+  },
+  "scripts": {
+    "pretest": "rm -rf package-lock.json && rm -rf node_modules && npm install",
+    "test": "mocha lib/*.spec.js",
+    "prestart": "rm -rf package-lock.json && npm install",
+    "start": "node index.js",
+    "build:init": "rm -rf package-lock.json && rm -rf dist && rm -rf node_modules",
+    "build:zip": "zip -rq smart-product-telemetry-service.zip . -x template.yml",
+    "build:dist": "mkdir dist && mv smart-product-telemetry-service.zip dist/",
+    "build": "npm run build:init && npm install --production && npm run build:zip && npm run build:dist"
+  },
+  "bundledDependencies": [
+    "moment"
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "name": "smart-product-jitr",
+  "description": "A Lambda function for the smart product device just-in-time-registration microservice",
+  "main": "index.js",
+  "author": {
+    "name": "aws-solutions-builder"
+  },
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "authorizer": "file:../../resources/authorizer/",
+    "aws-sdk": "*",
+    "fs": "0.0.1-security",
+    "logger": "file:../../resources/logger/",
+    "moment": "*",
+    "usage-metrics": "file:../../resources/usage-metrics"
+  },
+  "devDependencies": {
+    "aws-sdk-mock": "*",
+    "chai": "*",
+    "eslint": "^5.16.0",
+    "eslint-config-strongloop": "^2.1.0",
+    "mocha": "*",
+    "npm-run-all": "*",
+    "sinon": "*",
+    "sinon-chai": "*",
+    "sinon-test": "^2.4.0"
+  },
+  "scripts": {
+    "pretest": "rm -rf package-lock.json && rm -rf node_modules && npm install",
+    "test": "env LOGGING_LEVEL='2' AWS_REGION='us-east-1' mocha lib/*.spec.js",
+    "prestart": "rm -rf package-lock.json && npm install",
+    "start": "node index.js",
+    "build:init": "rm -rf package-lock.json && rm -rf dist && rm -rf node_modules",
+    "build:zip": "zip -rq smart-product-jitr-service.zip . -x template.yml",
+    "build:dist": "mkdir dist && mv smart-product-jitr-service.zip dist/",
+    "build": "npm run build:init && npm install --production && npm run build:zip && npm run build:dist"
+  },
+  "bundledDependencies": [],
+  "eslintConfig": {
+    "extends": "strongloop",
+    "env": {
+      "node": true,
+      "mocha": true
+    },
+    "parserOptions": {
+      "ecmaVersion": 8
+    },
+    "rules": {
+      "max-len": [
+        2,
+        120,
+        8
+      ]
+    }
+  }
+}

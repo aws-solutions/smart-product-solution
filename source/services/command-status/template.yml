@@ -1,0 +1,16 @@
+AWSTemplateFormatVersion : '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Local test version of the command status microservice.
+
+Resources:
+
+    EventProxy:
+        Type: AWS::Serverless::Function
+        Properties:
+            Handler: index.handler
+            Runtime: nodejs8.10
+            Timeout: 300
+            Environment:
+                Variables:
+                    COMMANDS_TBL: smart-product-commands
+                    LOGGING_LEVEL: TMP

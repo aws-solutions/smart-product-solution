@@ -1,0 +1,43 @@
+{
+    "name": "smart-product-event-proxy",
+    "description": "The event proxy microservice for the smart product solution",
+    "main": "index.js",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+        "moment": "*",
+        "randomstring": "*",
+        "underscore": "*",
+        "logger": "file:../../resources/logger/",
+        "uuid": "*"
+    },
+    "devDependencies": {
+        "aws-sdk": "*",
+        "aws-sdk-mock": "*",
+        "chai": "*",
+        "mocha": "*",
+        "npm-run-all": "*",
+        "proxyquire": "*",
+        "sinon": "*",
+        "sinon-chai": "*"
+    },
+    "scripts": {
+        "pretest": "rm -rf package-lock.json && rm -rf node_modules && npm install",
+        "test": "env NOTIFICATION_LAMBDA='lambda_arn', AWS_REGION='test' mocha lib/*.spec.js",
+        "prestart": "rm -rf package-lock.json && npm install",
+        "start": "node index.js",
+        "build:init": "rm -rf package-lock.json && rm -rf dist && rm -rf node_modules",
+        "build:zip": "zip -rq smart-product-event-proxy.zip . -x template.yml",
+        "build:dist": "mkdir dist && mv smart-product-event-proxy.zip dist/",
+        "build": "npm run build:init && npm install --production && npm run build:zip && npm run build:dist",
+        "local:depfix": "rm -rf ./node_modules/logger && cp -R ../../resources/logger ./node_modules/logger",
+        "local:test": "npm run local:depfix && sam local invoke 'EventProxy' -e ../tests/event-message.json --env-vars ../tests/env-vars.json"
+    },
+    "bundledDependencies": [
+        "moment",
+        "underscore",
+        "colors",
+        "uuid",
+        "logger"
+    ]
+}

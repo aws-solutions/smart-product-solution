@@ -1,0 +1,95 @@
+.custom_div {
+    position: relative;
+    display: block;
+    width: 100%;
+}
+
+.custom_list_item {
+    position: relative;
+    padding: 10px 10px 10px 10px;
+    border-bottom: 1px solid #e1e4ea;
+}
+
+.custom_mobile_title {
+    display: block;
+    overflow: hidden;
+}
+
+.mobile_title {
+    font-weight: bold;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+    display: block;
+    overflow: hidden;
+}
+
+.custom_mobile_date {
+    float: right;
+    vertical-align: top;
+    font-size: 10px;
+}
+
+.mobile_date {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.mobile_date_bt {
+    display: inline-block;
+    vertical-align: bottom;
+}
+
+.custom_date_td {
+    width: 200px;
+}
+
+.custom_event_type_td {
+    width: 50px;
+}
+
+.custom_mobile_message {
+    display: block;
+    overflow: hidden;
+}
+
+.mobile_message {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+    display: block;
+    overflow: hidden;
+}
+
+.no_result {
+    text-align: center;
+    font-weight: bold;
+}
+
+.custom_devicename_td {
+    display: block;
+    width: calc(100% - 130px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.custom_btn {
+    display: block;
+    width: calc(100% - 100px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mobile_tabs {
+    font-size: 12px;
+}
+
+.custom_registration {
+    font-size: 12px;
+}
+
+.custom_well {
+    word-break: break-all;
+}

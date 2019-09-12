@@ -1,0 +1,17 @@
+AWSTemplateFormatVersion : '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Local test version of the event proxy microservice.
+
+Resources:
+
+    EventProxy:
+        Type: AWS::Serverless::Function
+        Properties:
+            Handler: index.handler
+            Runtime: nodejs8.10
+            Timeout: 300
+            Environment:
+                Variables:
+                    EVENTS_TBL: smart-product-events
+                    EVENTS_TBL: smart-product-registrations
+                    LOGGING_LEVEL: TMP

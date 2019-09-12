@@ -1,0 +1,48 @@
+{
+    "name": "ui-framework-helper",
+    "description": "Smart Product solution custom resource helper Lambda function",
+    "main": "index.js",
+    "author": {
+        "name": "aws-solutions-builder"
+    },
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+        "aws-sdk": "*",
+        "moment": "*",
+        "underscore": "*",
+        "password-generator": "*",
+        "uuid": "^3.3.2",
+        "usage-metrics": "file:../usage-metrics/",
+        "logger": "file:../logger",
+        "request-promise": "*",
+        "request": "*"
+    },
+    "devDependencies": {
+        "aws-sdk": "*",
+        "chai": "*",
+        "sinon": "*",
+        "sinon-chai": "*",
+        "mocha": "*",
+        "aws-sdk-mock": "*",
+        "npm-run-all": "*",
+        "proxyquire": "*"
+    },
+    "scripts": {
+        "pretest": "rm -rf package-lock.json && rm -rf dist && npm install",
+        "test": "mocha lib/*.spec.js",
+        "build:init": "rm -rf package-lock.json && rm -rf dist && rm -rf node_modules",
+        "build:zip": "zip -rq smart-product-helper.zip . -x template.yml",
+        "build:dist": "mkdir dist && mv smart-product-helper.zip dist/",
+        "build": "npm run build:init && npm install --production && npm run build:zip && npm run build:dist"
+    },
+    "bundledDependencies": [
+        "aws-sdk",
+        "moment",
+        "underscore",
+        "password-generator",
+        "uuid",
+        "request-promise",
+        "request"
+    ]
+}
