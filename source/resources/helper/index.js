@@ -61,12 +61,13 @@ exports.handler = async (event, context, callback) => {
          * If IoT Core is not available, throw error.
          */
         let _iotHelper = new IoTHelper();
-        await _iotHelper
-          .getIotEndpoint()
-          .catch(_err => {
-            // Throws error if IoT Core may not be available in the region.
-            throw Error(`IoT Core may not be available in ${process.env.AWS_REGION} region. ${JSON.stringify(_err, null, 2)}`);
-          });
+        try {
+          await _iotHelper.getIotEndpoint();
+        } catch (error) {
+          // Throws error if IoT Core may not be available in the region.
+          console.error(`IoT Core may not be available in ${process.env.AWS_REGION} region.`, error);
+          throw Error(`IoT Core may not be available in ${process.env.AWS_REGION} region.`);
+        }
 
         /**
          * Checks parameters.
@@ -80,13 +81,9 @@ exports.handler = async (event, context, callback) => {
           && properties.DeploySmartProductSampleOwnerWebApp === 'false'
           && properties.EnableSmartProductDefenderEnable === 'false'
         ) {
-          await new Promise((_resolve, reject) => {
-            reject('The solution will not deploy anything as you choose every parameter "false".');
-          })
-            .catch(err => {
-              // Throws error when nothing would be deploy.
-              throw Error(err);
-            });
+          // Throws error when nothing would be deploy.
+          console.error('The solution will not deploy anything as you choose every parameter "false".');
+          throw Error('The solution will not deploy anything as you choose every parameter "false".');
         }
 
         /**
@@ -98,13 +95,9 @@ exports.handler = async (event, context, callback) => {
           properties.DeploySmartProductSampleOwnerWebApp === 'true'
           && properties.DeploySmartProductApi === 'false'
         ) {
-          await new Promise((_resolve, reject) => {
-            reject('The owner web app should be deployed with API infrastructure.');
-          })
-            .catch(err => {
-              // Throws error when API infrastructure is not deployed with owner web app.
-              throw Error(err);
-            });
+          // Throws error when API infrastructure is not deployed with owner web app.
+          console.error('The owner web app should be deployed with API infrastructure.');
+          throw Error('The owner web app should be deployed with API infrastructure.');
         }
 
         /**
@@ -116,22 +109,19 @@ exports.handler = async (event, context, callback) => {
         if (properties.DeploySmartProductTelemetry == 'true') {
           // Checks if the telemetry topic parameter is empty.
           if (properties.TelemetryTopic === '') {
-            await new Promise((_resolve, reject) => {
-              reject('The telemetry topic parameter cannot be empty.');
-            })
-              .catch(_err => {
-                // Throws error if the telemetry topic parameter is empty.
-                throw Error(err.message);
-              });
+            // Throws error if the telemetry topic parameter is empty.
+            console.error('The telemetry topic parameter cannot be empty.');
+            throw Error('The telemetry topic parameter cannot be empty.');
           }
 
           // Checks IoT Analytics availability
-          await _iotHelper
-            .getIotAnalyticsChannels()
-            .catch(_err => {
-              // Throws error if IoT Analytics may not be available in the region.
-              throw Error(`IoT Analytics may not be available in ${process.env.AWS_REGION} region.`);
-            });
+          try {
+            await _iotHelper.getIotAnalyticsChannels();
+          } catch (error) {
+            // Throws error if IoT Analytics may not be available in the region.
+            console.error(`IoT Analytics may not be available in ${process.env.AWS_REGION} region.`, error);
+            throw Error(`IoT Analytics may not be available in ${process.env.AWS_REGION} region.`);
+          }
         }
 
         /**
@@ -140,13 +130,9 @@ exports.handler = async (event, context, callback) => {
          */
         if (properties.DeploySmartProductEvent == 'true') {
           if (properties.EventTopic === '') {
-            await new Promise((_resolve, reject) => {
-              reject('The event topic parameter cannot be empty.');
-            })
-              .catch(_err => {
-                // Throws error if the event topic parameter is empty.
-                throw Error('The event topic parameter cannot be empty.');
-              });
+            // Throws error if the event topic parameter is empty.
+            console.error('The event topic parameter cannot be empty.');
+            throw Error('The event topic parameter cannot be empty.');
           }
         }
 
@@ -155,23 +141,24 @@ exports.handler = async (event, context, callback) => {
          * If IoT Device Defender may not be available in the region, throw error.
          */
         if (properties.EnableSmartProductDefenderEnable === 'true') {
-          await _iotHelper
-            .getAccountAuditConfiguration()
-            .catch(_err => {
-              // Throws error if IoT Device Defender may not be available in the region.
-              throw Error(`IoT Device Defender may not be available in ${process.env.AWS_REGION} region.`);
-            });
+          try {
+            await _iotHelper.getAccountAuditConfiguration();
+          } catch (error) {
+            // Throws error if IoT Device Defender may not be available in the region.
+            console.error(`IoT Device Defender may not be available in ${process.env.AWS_REGION} region.`, error);
+            throw Error(`IoT Device Defender may not be available in ${process.env.AWS_REGION} region.`);
+          }
         }
 
         /**
          * Creates a default thing type.
          */
-        await _iotHelper
-          .createThingType()
-          .catch(err => {
-            // Throws error while creating a default thing type
-            throw Error(err.message);
-          });
+        try {
+          await _iotHelper.createThingType();
+        } catch (error) {
+          console.error('An error occurred while creating a thing type.', error);
+          throw Error(error);
+        }
 
         responseData = {
           Message: 'Success to finish checking requirements'
@@ -206,27 +193,26 @@ exports.handler = async (event, context, callback) => {
         let _metric = {
           Solution: properties.SolutionId,
           UUID: properties.UUID,
-          TimeStamp: moment()
-            .utc()
-            .format('YYYY-MM-DD HH:mm:ss.S'),
+          TimeStamp: moment().utc().format('YYYY-MM-DD HH:mm:ss.S'),
           Data: {
             Version: properties.Version,
-            Launch: moment()
-              .utc()
-              .format(),
+            Launch: moment().utc().format(),
           },
         };
 
         let _usageMetrics = new UsageMetrics();
-        await _usageMetrics
-          .sendAnonymousMetric(_metric)
-          .then(_data => {
-            responseData = {};
-          })
-          .catch(_err => {
-            // Throws error when sending anonymous launch metric fails.
-            throw Error('Sending anonymous launch metric failed.');
-          });
+        try {
+          await _usageMetrics.sendAnonymousMetric(_metric);
+          responseData = {
+            Message: 'Sending anonymous data successful.'
+          };
+        } catch (error) {
+          // Throws error when sending anonymous launch metric fails.
+          console.error('Sending anonymous launch metric failed.', error);
+          responseData = {
+            Message: 'Sending anonymous launch metric failed.'
+          };
+        }
       }
     }
 
@@ -237,18 +223,12 @@ exports.handler = async (event, context, callback) => {
       if (event.RequestType === 'Create') {
         let _ddbHelper = new DynamoDBHelper();
         console.log(properties.DdbItem);
-        await _ddbHelper
-          .saveItem(
-            properties.DdbItem,
-            properties.DdbTable
-          )
-          .then(data => {
-            responseData = data;
-          })
-          .catch(_err => {
-            // Throw error when saving data to DyanmoDB fails.
-            throw Error(`Saving item to DyanmoDB table ${properties.DdbTable} failed.`);
-          });
+        try {
+          responseData = await _ddbHelper.saveItem(properties.DdbItem, properties.DdbTable);
+        } catch (error) {
+          console.error(`Saving item to DyanmoDB table ${properties.DdbTable} failed.`, error);
+          throw Error(`Saving item to DyanmoDB table ${properties.DdbTable} failed.`);
+        }
       }
     }
 
@@ -263,19 +243,13 @@ exports.handler = async (event, context, callback) => {
       ) {
         let _s3Helper = new S3Helper();
         console.log(properties.ConfigItem);
-        await _s3Helper
-          .putConfigFile(
-            properties.ConfigItem,
-            properties.DestS3Bucket,
-            properties.DestS3key
-          )
-          .then(data => {
-            responseData = data;
-          })
-          .catch(_err => {
-            // Throws error when saving config fail to S3 fails.
-            throw Error(`Saving config file to ${properties.DestS3Bucket}/${properties.DestS3key} failed.`);
-          });
+        try {
+          responseData = _s3Helper.putConfigFile(properties.ConfigItem, properties.DestS3Bucket, properties.DestS3key);
+        } catch (error) {
+          // Throws error when saving config fail to S3 fails.
+          console.error(`Saving config file to ${properties.DestS3Bucket}/${properties.DestS3key} failed.`, error);
+          throw Error(`Saving config file to ${properties.DestS3Bucket}/${properties.DestS3key} failed.`);
+        }
       }
     }
 
@@ -288,20 +262,16 @@ exports.handler = async (event, context, callback) => {
     ) {
       let _s3Helper = new S3Helper();
 
-      await _s3Helper
-        .copyAssets(
-          properties.ManifestKey,
-          properties.SourceS3Bucket,
-          properties.SourceS3key,
-          properties.DestS3Bucket
-        )
-        .then(_data => {
-          responseData = {};
-        })
-        .catch(_err => {
-          // Throws when copying of website asstes failes.
-          throw Error('Copy of website assets failed.');
-        });
+      try {
+        await _s3Helper.copyAssets(properties.ManifestKey, properties.SourceS3Bucket, properties.SourceS3key, properties.DestS3Bucket);
+        responseData = {
+          Message: 'Copy web assets successful.'
+        };
+      } catch (error) {
+        // Throws when copying of website asstes failes.
+        console.error('Copy of website assets failed.', error);
+        throw Error('Copy of website assets failed.');
+      }
     }
 
     /**
@@ -314,15 +284,13 @@ exports.handler = async (event, context, callback) => {
         || event.RequestType === 'Delete'
       ) {
         let _iotHelper = new IoTHelper();
-        await _iotHelper
-          .updateIoTSearchIndex(event.RequestType)
-          .then(data => {
-            responseData = data;
-          })
-          .catch(_err => {
-            // Throws error when updateIoTSearchIndex fails.
-            throw Error(`${event.RequestType} IoT search index failed.`);
-          });
+        try {
+          responseData = await _iotHelper.updateIoTSearchIndex(event.RequestType);
+        } catch (error) {
+          // Throws error when updateIoTSearchIndex fails.
+          console.error(`${event.RequestType} IoT search index failed.`, error);
+          throw Error(`${event.RequestType} IoT search index failed.`);
+        }
       }
     }
 
@@ -339,15 +307,13 @@ exports.handler = async (event, context, callback) => {
         let snsRoleArn = properties.SnsRoleArn;
         let snsTargetArn = properties.SnsTargetArn;
         let auditRoleArn = properties.AuditRoleArn;
-        await _iotHelper
-          .updateIoTDeviceDefender(event.RequestType, snsRoleArn, snsTargetArn, auditRoleArn)
-          .then(data => {
-            responseData = data;
-          })
-          .catch(_err => {
-            // Throws error when updateIoTDeviceDefender fails.
-            throw Error(`${event.RequestType} IoT Device Defender configuration failed.`);
-          });
+        try {
+          responseData = await _iotHelper.updateIoTDeviceDefender(event.RequestType, snsRoleArn, snsTargetArn, auditRoleArn);
+        } catch (error) {
+          // Throws error when updateIoTDeviceDefender fails.
+          console.error(`${event.RequestType} IoT Device Defender configuration failed.`, error);
+          throw Error(`${event.RequestType} IoT Device Defender configuration failed.`);
+        }
       }
     }
   } catch (err) {
@@ -367,13 +333,7 @@ exports.handler = async (event, context, callback) => {
 /**
  * Sends a response to the pre-signed S3 URL
  */
-let sendResponse = async function (
-  event,
-  callback,
-  logStreamName,
-  responseStatus,
-  responseData
-) {
+let sendResponse = async function (event, callback, logStreamName, responseStatus, responseData) {
   const responseBody = JSON.stringify({
     Status: responseStatus,
     Reason: `${JSON.stringify(responseData)}`,
@@ -397,13 +357,12 @@ let sendResponse = async function (
     body: responseBody,
   };
 
-  await requestPromise(options)
-    .then(_data => {
-      console.log('Successfully sent stack response!');
-      callback(null, 'Successfully sent stack response!');
-    })
-    .catch(err => {
-      console.log('sendResponse Error:', err);
-      callback(err);
-    });
+  try {
+    await requestPromise(options);
+    console.log('Successfully sent stack response!');
+    callback(null, 'Successfully sent stack response!');
+  } catch (error) {
+    console.log('sendResponse Error:', error);
+    callback(error);
+  }
 };

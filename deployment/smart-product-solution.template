@@ -96,18 +96,14 @@ Metadata:
 Mappings:
     BuildEnv:
         Images:
-            UbuntuNodejs8: "aws/codebuild/nodejs:8.11.0"
-            Ruby: "aws/codebuild/ruby:2.5.1"
+            Standard3: "aws/codebuild/standard:3.0"
         CDK:
             StackName: "SmartProductSolutionStack"
         Metrics:
             SendAnonymousUsage: 'true'
     SourceCode:
-        OpenSource:
-            S3Bucket: "%%BUCKET_NAME%%" # open source asset bucket
-            KeyPrefix: "%%SOLUTION_NAME%%/%%VERSION%%"
-        DistSource:
-            S3Bucket: "%%BUCKET_NAME%%" # open source asset bucket
+        Source:
+            S3Bucket: "%%BUCKET_NAME%%"
             KeyPrefix: "%%SOLUTION_NAME%%/%%VERSION%%"
 
 Resources:
@@ -115,6 +111,12 @@ Resources:
     DevOutputBucket:
         Type: AWS::S3::Bucket
         DeletionPolicy: Retain
+        Properties:
+            PublicAccessBlockConfiguration:
+                BlockPublicAcls: True
+                BlockPublicPolicy: True
+                IgnorePublicAcls: True
+                RestrictPublicBuckets: True
         Metadata:
             cfn_nag:
                 rules_to_suppress:
@@ -124,6 +126,9 @@ Resources:
                     -
                         id: W41
                         reason: "validated and does not require to encrypt the bucket."
+                    -
+                        id: W51
+                        reason: "The dev output bucket does not require bucket policy because the bucket is only accessed by CodeBuild and CodePipeline."
 
     SmartProductRepo:
         Type: AWS::CodeCommit::Repository
@@ -136,6 +141,11 @@ Resources:
         Type: AWS::S3::Bucket
         DeletionPolicy: Retain
         Properties:
+            PublicAccessBlockConfiguration:
+                BlockPublicAcls: True
+                BlockPublicPolicy: True
+                IgnorePublicAcls: True
+                RestrictPublicBuckets: True
             VersioningConfiguration:
                 Status: Enabled
         Metadata:
@@ -147,6 +157,9 @@ Resources:
                     -
                         id: W41
                         reason: "validated and does not require to encrypt the bucket."
+                    -
+                        id: W51
+                        reason: "The artifact bucket does not require bucket policy because the bucket is only accessed by CodeBuild and CodePipeline."
 
     DevCodePipeline:
         Type: AWS::CodePipeline::Pipeline
@@ -220,13 +233,13 @@ Resources:
                   version: 0.2
                   phases:
                     install:
+                      runtime-versions:
+                        nodejs: 12
                       commands:
-                        - echo "This buildspec is based on image - aws/codebuild/nodejs:8.10"
-                        - sudo npm install -g n
-                        - sudo n 8.10
+                        - echo "This buildspec is based on image - aws/codebuild/standard:2.0"
                         - node -v
-                        - sudo apt-get update
-                        - sudo apt-get install jq
+                        - apt-get update
+                        - apt-get install jq
                     pre_build:
                       commands:
                         - echo "Installing dependencies and executing unit tests - `pwd`"
@@ -259,7 +272,7 @@ Resources:
                       - buildspec.yml
             Environment:
                 ComputeType: BUILD_GENERAL1_SMALL
-                Image: !FindInMap [ BuildEnv, Images, UbuntuNodejs8 ]
+                Image: !FindInMap [ BuildEnv, Images, Standard3 ]
                 Type: LINUX_CONTAINER
                 EnvironmentVariables:
                     - Name: BUILD_OUTPUT_BUCKET
@@ -283,16 +296,13 @@ Resources:
                   version: 0.2
                   phases:
                     install:
+                      runtime-versions:
+                        nodejs: 12
+                        ruby: 2.6
                       commands:
-                        - echo "This buildspec is based on image - aws/codebuild/ruby:2.5.1"
-                        - echo "Installing node & npm"
-                        - curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-                        - sudo apt-get install -y nodejs
-                        - sudo npm install -g n
-                        - sudo n 8.10
-                        - node -v
-                        - echo "Installing AWS CDK"
-                        - npm install -g cdk@1.0.0
+                        - echo "This buildspec is based on image - aws/codebuild/standard:2.0"
+                        - node --version
+                        - npm install -g cdk@1.18.0
                         - cdk --version
                         - echo "Installing cfn_nag"
                         - gem install cfn-nag
@@ -322,7 +332,7 @@ Resources:
                       - buildspec.yml
             Environment:
                 ComputeType: BUILD_GENERAL1_SMALL
-                Image: !FindInMap [ BuildEnv, Images, Ruby ]
+                Image: !FindInMap [ BuildEnv, Images, Standard3 ]
                 Type: LINUX_CONTAINER
                 EnvironmentVariables:
                     - Name: BUILD_OUTPUT_BUCKET
@@ -340,23 +350,18 @@ Resources:
         Properties:
             Description: "Smart Product Solution CICD helper"
             Code:
-                S3Bucket: !Join ["-", [!FindInMap ["SourceCode", "DistSource", "S3Bucket"], Ref: "AWS::Region"]]
-                S3Key: !Join ["/", [!FindInMap ["SourceCode", "DistSource", "KeyPrefix"],  "smart-product-cicd.zip"]]
+                S3Bucket: !Join ["-", [!FindInMap ["SourceCode", "Source", "S3Bucket"], Ref: "AWS::Region"]]
+                S3Key: !Join ["/", [!FindInMap ["SourceCode", "Source", "KeyPrefix"],  "smart-product-cicd.zip"]]
             Handler: index.handler
-            Runtime: nodejs8.10
+            Runtime: nodejs12.x
             Role: !GetAtt CICDHelperRole.Arn
             Timeout: 300
             MemorySize: 256
             Environment:
                 Variables:
-                    CODE_URL:
-                        !Join
-                            - ""
-                            - - !Sub https://s3.${AWS::Region}.amazonaws.com/
-                              - !FindInMap ["SourceCode", "OpenSource", "S3Bucket"]
-                              - !Sub -${AWS::Region}/
-                              - !FindInMap ["SourceCode", "OpenSource", "KeyPrefix"]
-                              - /smart-product-solution.zip
+                    CODE_BUCKET: !Join ["", [!FindInMap ["SourceCode", "Source", "S3Bucket"], "-", !Ref "AWS::Region"]]
+                    CODE_KEY: !FindInMap ["SourceCode", "Source", "KeyPrefix"]
+                    CODE_SOURCE: "smart-product-solution.zip"
                     CODECOMMIT_REPO: !Sub ${SmartProductRepo.Name}
                     LOGGING_LEVEL: 2
 
@@ -516,6 +521,12 @@ Resources:
                             - "cloudfront:UpdateDistribution"
                         Resource:
                             - "*"
+                    -
+                        Effect: "Allow"
+                        Action:
+                            - "s3:GetObject"
+                        Resource:
+                            - !Join ["", ["arn:aws:s3:::", !FindInMap ["SourceCode", "Source", "S3Bucket"], "-", !Ref "AWS::Region", "/", !FindInMap ["SourceCode", "Source", "KeyPrefix"], "/smart-product-solution.zip"]]
             Roles:
                 -
                     Ref: "CICDHelperRole"
@@ -820,7 +831,7 @@ Outputs:
         Value: !Sub ${CodeCommitRepository}
     PipelineBuildImage:
         Description: "Image used to build this pipeline"
-        Value: !FindInMap [ BuildEnv, Images, UbuntuNodejs8 ]
+        Value: !FindInMap [ BuildEnv, Images, Standard3 ]
     PipelineS3Artifacts:
         Description: "Bucket for CodePipeline to store build artifacts"
         Value: !Ref ArtifactS3Bucket

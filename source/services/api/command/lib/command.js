@@ -317,7 +317,11 @@ class Command {
           };
 
           let usageMetrics = new UsageMetrics();
-          await usageMetrics.sendAnonymousMetric(metric);
+          try {
+            await usageMetrics.sendAnonymousMetric(metric);
+          } catch (e) {
+            Logger.error(Logger.levels.INFO, e);
+          }
         }
 
         return Promise.resolve(_command);

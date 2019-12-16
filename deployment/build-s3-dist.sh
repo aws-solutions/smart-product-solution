@@ -47,16 +47,31 @@ echo "--------------------------------------------------------------------------
 echo "cp $template_dir/smart-product-solution.yaml $template_dist_dir/smart-product-solution.template"
 cp $template_dir/smart-product-solution.yaml $template_dist_dir/smart-product-solution.template
 
-echo "Updating code source bucket in template with $1"
-replace="s/%%BUCKET_NAME%%/$1/g"
-echo "sed -i '' -e $replace $template_dist_dir/smart-product-solution.template"
-sed -i '' -e $replace $template_dist_dir/smart-product-solution.template
-replace="s/%%SOLUTION_NAME%%/$2/g"
-echo "sed -i '' -e $replace $template_dist_dir/smart-product-solution.template"
-sed -i '' -e $replace $template_dist_dir/smart-product-solution.template
-replace="s/%%VERSION%%/$3/g"
-echo "sed -i '' -e $replace $template_dist_dir/smart-product-solution.template"
-sed -i '' -e $replace $template_dist_dir/smart-product-solution.template
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # Mac OS
+    echo "Updating code source bucket in template with $1"
+    replace="s/%%BUCKET_NAME%%/$1/g"
+    echo "sed -i '' -e $replace $template_dist_dir/smart-product-solution.template"
+    sed -i '' -e $replace $template_dist_dir/smart-product-solution.template
+    replace="s/%%SOLUTION_NAME%%/$2/g"
+    echo "sed -i '' -e $replace $template_dist_dir/smart-product-solution.template"
+    sed -i '' -e $replace $template_dist_dir/smart-product-solution.template
+    replace="s/%%VERSION%%/$3/g"
+    echo "sed -i '' -e $replace $template_dist_dir/smart-product-solution.template"
+    sed -i '' -e $replace $template_dist_dir/smart-product-solution.template
+else
+    # Other linux
+    echo "Updating code source bucket in template with $1"
+    replace="s/%%BUCKET_NAME%%/$1/g"
+    echo "sed -i -e $replace $template_dist_dir/smart-product-solution.template"
+    sed -i -e $replace $template_dist_dir/smart-product-solution.template
+    replace="s/%%SOLUTION_NAME%%/$2/g"
+    echo "sed -i -e $replace $template_dist_dir/smart-product-solution.template"
+    sed -i -e $replace $template_dist_dir/smart-product-solution.template
+    replace="s/%%VERSION%%/$3/g"
+    echo "sed -i -e $replace $template_dist_dir/smart-product-solution.template"
+    sed -i -e $replace $template_dist_dir/smart-product-solution.template
+fi
 
 echo "------------------------------------------------------------------------------"
 echo "[Rebuild] Console"

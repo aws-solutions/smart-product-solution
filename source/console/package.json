@@ -1,25 +1,23 @@
 {
   "name": "aws-smart-product",
-  "version": "1.3.0",
+  "version": "1.0.1",
   "private": true,
   "dependencies": {
-    "aws-amplify": "^1.1.28",
-    "aws-amplify-react": "^2.3.8",
+    "aws-amplify": "^1.2.4",
+    "aws-amplify-react": "^2.5.4",
     "bootstrap": "^3.4.1",
-    "chartist": "^0.11.2",
-    "node-sass": "^4.12.0",
-    "react": "^16.8.6",
+    "node-sass": "^4.13.0",
+    "react": "^16.11.0",
     "react-bootstrap": "^0.32.4",
-    "react-chartist": "^0.13.3",
-    "react-dom": "^16.8.6",
+    "react-dom": "^16.11.0",
     "react-notification-system": "^0.2.17",
-    "react-router": "^5.0.0",
-    "react-router-dom": "^5.0.0",
-    "react-scripts": "^3.0.1",
-    "react-toggle": "^4.0.2"
+    "react-router": "^5.1.2",
+    "react-router-dom": "^5.1.2",
+    "react-scripts": "^3.2.0",
+    "react-toggle": "^4.1.1"
   },
   "devDependencies": {
-    "@types/react": "16.8.13",
+    "@types/react": "^16.9.11",
     "typescript": "3.4.3"
   },
   "scripts": {

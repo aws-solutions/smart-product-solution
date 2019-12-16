@@ -19,14 +19,13 @@ import dynamodb = require('@aws-cdk/aws-dynamodb');
 import lambda = require('@aws-cdk/aws-lambda');
 import iot = require('@aws-cdk/aws-iot');
 import apigateway = require('@aws-cdk/aws-apigateway');
-import { generateName } from './name-generator';
 import s3 = require('@aws-cdk/aws-s3');
 
 export interface ApiProps {
   helperFunction: cfn.CustomResourceProvider;
   helperFunctionRole: iam.Role;
   userPool: cognito.UserPool;
-  userPoolClient: cognito.UserPoolClient,
+  userPoolClient: cognito.UserPoolClient;
   settingsTable: dynamodb.Table;
   registrationTable: dynamodb.Table;
   commandTable: dynamodb.Table;
@@ -38,31 +37,50 @@ export interface ApiProps {
   anonymousData: string;
 }
 
-export function addCorsOptions(apiResource: apigateway.IResource, apiLambdaExecRole: iam.Role) {
-  apiResource.addMethod('OPTIONS', new apigateway.MockIntegration({
-    integrationResponses: [{
-      statusCode: '200',
-      responseParameters: {
-        'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-        'method.response.header.Access-Control-Allow-Origin': "'*'",
-        'method.response.header.Access-Control-Allow-Methods': "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
-      },
-    }],
-    passthroughBehavior: apigateway.PassthroughBehavior.WHEN_NO_MATCH,
-    credentialsRole: apiLambdaExecRole,
-    requestTemplates: {
-      "application/json": "{\"statusCode\": 200}"
-    },
-  }), {
-      methodResponses: [{
-        statusCode: '200',
-        responseParameters: {
-          'method.response.header.Access-Control-Allow-Headers': true,
-          'method.response.header.Access-Control-Allow-Methods': true,
-          'method.response.header.Access-Control-Allow-Origin': true
+export interface IMethodResource {
+  apiResource: apigateway.IResource;
+  lambdaFunction: lambda.Function;
+}
+
+export function addMethod(resources: IMethodResource[], apiLambdaExecRole: iam.Role, authorizerId: string, apiDeployment: apigateway.Deployment) {
+  for (let resource of resources) {
+    let { apiResource, lambdaFunction } = resource;
+    let options = apiResource.addMethod('OPTIONS',
+      new apigateway.MockIntegration({
+        integrationResponses: [{
+          statusCode: '200',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+            'method.response.header.Access-Control-Allow-Origin': "'*'",
+            'method.response.header.Access-Control-Allow-Methods': "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+          },
+        }],
+        passthroughBehavior: apigateway.PassthroughBehavior.WHEN_NO_MATCH,
+        credentialsRole: apiLambdaExecRole,
+        requestTemplates: {
+          "application/json": "{\"statusCode\": 200}"
         },
-      }]
-    })
+      }), {
+        methodResponses: [{
+          statusCode: '200',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Headers': true,
+            'method.response.header.Access-Control-Allow-Methods': true,
+            'method.response.header.Access-Control-Allow-Origin': true
+          },
+        }]
+      }
+    );
+
+    let anyMethod = apiResource.addMethod('ANY', new apigateway.LambdaIntegration(lambdaFunction), {
+      authorizer: { authorizerId },
+      authorizationType: apigateway.AuthorizationType.COGNITO
+    });
+
+    apiDeployment.node.addDependency(apiResource.node.findChild('Resource') as cdk.Resource);
+    apiDeployment.node.addDependency(options.node.findChild('Resource') as cdk.Resource);
+    apiDeployment.node.addDependency(anyMethod.node.findChild('Resource') as cdk.Resource);
+  }
 }
 
 export class SmartProductApi extends cdk.Construct {
@@ -150,7 +168,7 @@ export class SmartProductApi extends cdk.Construct {
         `smart-product-solution/${props.solutionVersion}/smart-product-admin-service.zip`
       ),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_12_X,
       timeout: cdk.Duration.seconds(60),
       memorySize: 256,
       role: adminServiceRole,
@@ -173,7 +191,7 @@ export class SmartProductApi extends cdk.Construct {
         `smart-product-solution/${props.solutionVersion}/smart-product-registration-service.zip`
       ),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_12_X,
       timeout: cdk.Duration.seconds(60),
       memorySize: 256,
       role: registrationServiceRole,
@@ -201,7 +219,7 @@ export class SmartProductApi extends cdk.Construct {
         `smart-product-solution/${props.solutionVersion}/smart-product-event-service.zip`
       ),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_12_X,
       timeout: cdk.Duration.seconds(60),
       memorySize: 256,
       role: eventServiceRole,
@@ -226,7 +244,7 @@ export class SmartProductApi extends cdk.Construct {
         `smart-product-solution/${props.solutionVersion}/smart-product-command-service.zip`
       ),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_12_X,
       timeout: cdk.Duration.seconds(300),
       memorySize: 256,
       role: commandServiceRole,
@@ -253,7 +271,7 @@ export class SmartProductApi extends cdk.Construct {
         `smart-product-solution/${props.solutionVersion}/smart-product-status-service.zip`
       ),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_12_X,
       timeout: cdk.Duration.seconds(300),
       memorySize: 256,
       role: statusServiceRole,
@@ -276,7 +294,7 @@ export class SmartProductApi extends cdk.Construct {
         `smart-product-solution/${props.solutionVersion}/smart-product-device-service.zip`
       ),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_12_X,
       timeout: cdk.Duration.seconds(60),
       memorySize: 256,
       role: deviceServiceRole,
@@ -296,7 +314,7 @@ export class SmartProductApi extends cdk.Construct {
         `smart-product-solution/${props.solutionVersion}/smart-product-command-status.zip`
       ),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_12_X,
       timeout: cdk.Duration.seconds(60),
       memorySize: 256,
       role: commandServiceRole,
@@ -314,9 +332,45 @@ export class SmartProductApi extends cdk.Construct {
     })
 
     const api = new apigateway.RestApi(this, 'smart-product-api', {
-      deploy: true,
-      restApiName: "SmartProductAPI"
+      restApiName: 'SmartProductAPI',
+      deploy: false,
     });
+
+    const apiDeployment = new apigateway.Deployment(this, 'Deployment', {
+      api,
+      description: 'Production'
+    });
+    const apiDeploymentResource = apiDeployment.node.findChild('Resource') as apigateway.CfnDeployment;
+    apiDeploymentResource.cfnOptions.metadata = {
+      cfn_nag: {
+        rules_to_suppress: [{
+          id: 'W45',
+          reason: 'The access logging is enabled at API Gateway stage.'
+        }]
+      }
+    };
+    api.deploymentStage = new apigateway.Stage(this, 'Stage', {
+      deployment: apiDeployment,
+      description: 'Smart Product Stage',
+      stageName: 'prod'
+    });
+    const apiStageResource = api.deploymentStage.node.findChild('Resource') as apigateway.CfnStage;
+    apiStageResource.addPropertyOverride('AccessLogSetting', {
+      DestinationArn: `arn:aws:logs:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:log-group:API-Gateway-Execution-Logs_${api.restApiId}/prod`,
+      Format: `{ "requestId": "$context.requestId",
+        "ip": "$context.identity.sourceIp",
+        "caller": "$context.identity.caller",
+        "user": "$context.identity.user",
+        "userAgent": "$context.identity.userAgent",
+        "requestTime": "$context.requestTime",
+        "httpMethod": "$context.httpMethod",
+        "resourcePath": "$context.resourcePath",
+        "status": "$context.status",
+        "protocol": "$context.protocol",
+        "responseLength": "$context.responseLength"
+      }`.replace(/\n/g, '')
+    });
+
     const authorizer = new apigateway.CfnAuthorizer(this, 'Authorizer', {
       identitySource: 'method.request.header.Authorization',
       name: 'Authorization',
@@ -326,102 +380,60 @@ export class SmartProductApi extends cdk.Construct {
     });
 
     const adminRes = api.root.addResource("admin");
+    apiDeployment.node.addDependency(adminRes.node.findChild('Resource') as cdk.Resource);
 
     //admin/settings/config/{settingId}
     const configRes = adminRes.addResource("settings").addResource("config").addResource("{settingId}");
-    addCorsOptions(configRes, apiLambdaExecRole);
-    configRes.addMethod("ANY", new apigateway.LambdaIntegration(adminService), {
-      authorizer: { authorizerId: `${authorizer.ref}` },
-      authorizationType: apigateway.AuthorizationType.COGNITO
-    });
 
     //registration
     const registrationRes = api.root.addResource("registration");
-    addCorsOptions(registrationRes, apiLambdaExecRole);
-    registrationRes.addMethod("ANY", new apigateway.LambdaIntegration(registrationService), {
-      authorizer: { authorizerId: `${authorizer.ref}` },
-      authorizationType: apigateway.AuthorizationType.COGNITO
-    });
 
     //devices
     const devicesRes = api.root.addResource("devices");
-    addCorsOptions(devicesRes, apiLambdaExecRole);
-    devicesRes.addMethod("ANY", new apigateway.LambdaIntegration(deviceService), {
-      authorizer: { authorizerId: `${authorizer.ref}` },
-      authorizationType: apigateway.AuthorizationType.COGNITO
-    });
 
     //devices/events
     const eventsRes = devicesRes.addResource("events");
-    addCorsOptions(eventsRes, apiLambdaExecRole);
-    eventsRes.addMethod("ANY", new apigateway.LambdaIntegration(eventService), {
-      authorizer: { authorizerId: `${authorizer.ref}` },
-      authorizationType: apigateway.AuthorizationType.COGNITO
-    });
 
     //devices/alerts
     const alertsRes = devicesRes.addResource("alerts");
-    addCorsOptions(alertsRes, apiLambdaExecRole);
-    alertsRes.addMethod("ANY", new apigateway.LambdaIntegration(eventService), {
-      authorizer: { authorizerId: `${authorizer.ref}` },
-      authorizationType: apigateway.AuthorizationType.COGNITO
-    });
 
     //devices/alerts/count
     const countRes = alertsRes.addResource("count");
-    addCorsOptions(countRes, apiLambdaExecRole);
-    countRes.addMethod("ANY", new apigateway.LambdaIntegration(eventService), {
-      authorizer: { authorizerId: `${authorizer.ref}` },
-      authorizationType: apigateway.AuthorizationType.COGNITO
-    });
 
     //devices/{deviceId}
     const deviceRes = devicesRes.addResource("{deviceId}");
-    addCorsOptions(deviceRes, apiLambdaExecRole);
-    deviceRes.addMethod("ANY", new apigateway.LambdaIntegration(deviceService), {
-      authorizer: { authorizerId: `${authorizer.ref}` },
-      authorizationType: apigateway.AuthorizationType.COGNITO
-    });
 
     //devices/{deviceId}/commands
     const commandsRes = deviceRes.addResource("commands");
-    addCorsOptions(commandsRes, apiLambdaExecRole);
-    commandsRes.addMethod("ANY", new apigateway.LambdaIntegration(commandService), {
-      authorizer: { authorizerId: `${authorizer.ref}` },
-      authorizationType: apigateway.AuthorizationType.COGNITO
-    });
 
     //devices/{deviceId}/commands/{commandId}
     const commandRes = commandsRes.addResource("{commandId}");
-    addCorsOptions(commandRes, apiLambdaExecRole);
-    commandRes.addMethod("ANY", new apigateway.LambdaIntegration(commandService), {
-      authorizer: { authorizerId: `${authorizer.ref}` },
-      authorizationType: apigateway.AuthorizationType.COGNITO
-    });
 
     //devices/{deviceId}/events
     const deviceEventsRes = deviceRes.addResource("events");
-    addCorsOptions(deviceEventsRes, apiLambdaExecRole);
-    deviceEventsRes.addMethod("ANY", new apigateway.LambdaIntegration(eventService), {
-      authorizer: { authorizerId: `${authorizer.ref}` },
-      authorizationType: apigateway.AuthorizationType.COGNITO
-    });
 
     //devices/{deviceId}/events/{eventId}
     const deviceEventRes = deviceEventsRes.addResource("{eventId}");
-    addCorsOptions(deviceEventRes, apiLambdaExecRole);
-    deviceEventRes.addMethod("ANY", new apigateway.LambdaIntegration(eventService), {
-      authorizer: { authorizerId: `${authorizer.ref}` },
-      authorizationType: apigateway.AuthorizationType.COGNITO
-    });
 
     //devices/{deviceId}/status
     const statusRes = deviceRes.addResource("status");
-    addCorsOptions(statusRes, apiLambdaExecRole);
-    statusRes.addMethod("ANY", new apigateway.LambdaIntegration(statusService), {
-      authorizer: { authorizerId: `${authorizer.ref}` },
-      authorizationType: apigateway.AuthorizationType.COGNITO
-    });
+
+    addMethod(
+      [
+        { apiResource: configRes, lambdaFunction: adminService},
+        { apiResource: registrationRes, lambdaFunction: registrationService},
+        { apiResource: devicesRes, lambdaFunction: deviceService},
+        { apiResource: eventsRes, lambdaFunction: eventService},
+        { apiResource: alertsRes, lambdaFunction: eventService},
+        { apiResource: countRes, lambdaFunction: eventService},
+        { apiResource: deviceRes, lambdaFunction: deviceService},
+        { apiResource: commandsRes, lambdaFunction: commandService},
+        { apiResource: commandRes, lambdaFunction: commandService},
+        { apiResource: deviceEventsRes, lambdaFunction: eventService},
+        { apiResource: deviceEventRes, lambdaFunction: eventService},
+        { apiResource: statusRes, lambdaFunction: statusService}
+      ]
+      , apiLambdaExecRole, authorizer.ref, apiDeployment);
 
     //---------------------------------------------------------------------------------------------
     // Others

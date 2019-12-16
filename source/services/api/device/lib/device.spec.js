@@ -235,14 +235,13 @@ describe('Device', function() {
       _deviceManager
         .deleteDevice(ticket, device.Item.deviceId)
         .then(data => {
-          assert.equal('Success to delete', data);
+          AWS.restore('Iot');
+          assert.equal('Delete successful', data);
           done();
         })
         .catch(err => {
-          done(err);
-        })
-        .finally(() => {
           AWS.restore('Iot');
+          done(err);
         });
     });
 
@@ -258,18 +257,17 @@ describe('Device', function() {
       _deviceManager
         .deleteDevice(ticket, device.Item.deviceId)
         .then(_data => {
+          AWS.restore('Iot');
           done('invalid failur for negative test');
         })
         .catch(err => {
+          AWS.restore('Iot');
           expect(err).to.deep.equal({
             code: 400,
             error: 'MissingDevice',
             message: `The device "${device.Item.deviceId}" does not exist.`
           });
           done();
-        })
-        .finally(() => {
-          AWS.restore('Iot');
         });
     });
 
@@ -323,14 +321,13 @@ describe('Device', function() {
       _deviceManager
         .deleteDevice(ticket, device.Item.deviceId)
         .then(_data => {
+          AWS.restore('Iot');
           done('invalid failur for negative test');
         })
         .catch(err => {
+          AWS.restore('Iot');
           expect(err).to.deep.equal(error);
           done();
-        })
-        .finally(() => {
-          AWS.restore('Iot');
         });
     });
   });

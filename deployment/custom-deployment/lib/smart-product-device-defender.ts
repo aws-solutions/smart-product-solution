@@ -18,6 +18,7 @@ import cfn = require('@aws-cdk/aws-cloudformation');
 
 export interface SmartProductDeviceDefenderProps {
 	helperFunction: cfn.CustomResourceProvider;
+	helperFunctionPolicy: iam.Policy;
 }
 
 export class SmartProductDeviceDefender extends cdk.Construct {
@@ -87,6 +88,7 @@ export class SmartProductDeviceDefender extends cdk.Construct {
 			}
 		})
 		_updateDefender.node.addDependency(auditNotifyPolicy.node.findChild('Resource') as cdk.Resource)
+		_updateDefender.node.addDependency(props.helperFunctionPolicy.node.findChild('Resource') as cdk.Resource)
 
 	}
 }

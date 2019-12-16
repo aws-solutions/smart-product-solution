@@ -12,8 +12,8 @@ For more information and a detailed deployment guide visit the Smart Product sol
 * Next, run unit tests to make sure added customization passes the tests
 ```
 cd ./deployment
-chmod +x ./run-unit-tests.sh \n
-./run-unit-tests.sh \n
+chmod +x ./run-unit-tests.sh
+./run-unit-tests.sh
 ```
 
 ## Building distributable for customization
@@ -26,14 +26,14 @@ _Note:_ You would have to create an S3 bucket with the prefix 'my-bucket-name-<a
 
 * Now build the distributable:
 ```
-chmod +x ./build-s3-dist.sh \n
-./build-s3-dist.sh $DIST_OUTPUT_BUCKET $SOLUTION_NAME $$VERSION \n
+chmod +x ./build-s3-dist.sh
+./build-s3-dist.sh $DIST_OUTPUT_BUCKET $SOLUTION_NAME $$VERSION
 ```
 
 * Deploy the distributable to an Amazon S3 bucket in your account. _Note:_ you must have the AWS Command Line Interface installed.
 ```
-aws s3 cp ./global-s3-assets/ s3://my-bucket-name-<aws_region>/smart-product-solution/<my-version>/ --recursive --acl bucket-owner-full-control --profile aws-cred-profile-name \n
-aws s3 cp ./regional-s3-assets/ s3://my-bucket-name-<aws_region>/smart-product-solution/<my-version>/ --recursive --acl bucket-owner-full-control --profile aws-cred-profile-name \n
+aws s3 cp ./global-s3-assets/ s3://my-bucket-name-<aws_region>/smart-product-solution/<my-version>/ --recursive --acl bucket-owner-full-control --profile aws-cred-profile-name
+aws s3 cp ./regional-s3-assets/ s3://my-bucket-name-<aws_region>/smart-product-solution/<my-version>/ --recursive --acl bucket-owner-full-control --profile aws-cred-profile-name
 ```
 
 * Get the link of the smart-product-solution.template uploaded to your Amazon S3 bucket.

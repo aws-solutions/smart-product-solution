@@ -15,17 +15,17 @@
     "ts-node": "^8.1.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-apigateway": "^0.39.0",
-    "@aws-cdk/aws-cloudfront": "^0.39.0",
-    "@aws-cdk/aws-cognito": "^0.39.0",
-    "@aws-cdk/aws-dynamodb": "^0.39.0",
-    "@aws-cdk/aws-iam": "^0.39.0",
-    "@aws-cdk/aws-iot": "^0.39.0",
-    "@aws-cdk/aws-iotanalytics": "^0.39.0",
-    "@aws-cdk/aws-lambda": "^0.39.0",
-    "@aws-cdk/aws-s3": "^0.39.0",
-    "@aws-cdk/aws-sns": "^0.39.0",
-    "aws-cdk": "^0.39.0",
+    "@aws-cdk/aws-apigateway": "^1.18.0",
+    "@aws-cdk/aws-cloudfront": "^1.18.0",
+    "@aws-cdk/aws-cognito": "^1.18.0",
+    "@aws-cdk/aws-dynamodb": "^1.18.0",
+    "@aws-cdk/aws-iam": "^1.18.0",
+    "@aws-cdk/aws-iot": "^1.18.0",
+    "@aws-cdk/aws-iotanalytics": "^1.18.0",
+    "@aws-cdk/aws-lambda": "^1.18.0",
+    "@aws-cdk/aws-s3": "^1.18.0",
+    "@aws-cdk/aws-sns": "^1.18.0",
+    "aws-cdk": "^1.18.0",
     "uuid": "^3.3.2"
   }
 }

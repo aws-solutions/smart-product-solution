@@ -122,7 +122,11 @@ const respond = async event => {
       };
 
       let usageMetrics = new UsageMetrics();
-      await usageMetrics.sendAnonymousMetric(metric);
+      try {
+        await usageMetrics.sendAnonymousMetric(metric);
+      } catch (e) {
+        Logger.error(Logger.levels.INFO, e);
+      }
     }
   } catch (e) {
     Logger.error(Logger.levels.INFO, e);

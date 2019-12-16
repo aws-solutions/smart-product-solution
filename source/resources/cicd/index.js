@@ -20,12 +20,14 @@ const path = require('path');
 const url = require('url');
 const https = require('https');
 const execSync = require('child_process').execSync;
+const admZip = require('adm-zip');
 
 const readdir = promisify(fs.readdir);
 const fsstat = promisify(fs.stat);
 
 const AWS = require('aws-sdk')
 const codecommit = new AWS.CodeCommit({ apiVersion: '2015-04-13', region: process.env.AWS_REGION })
+const s3 = new AWS.S3();
 
 exports.handler = async (event, context) => {
   Logger.log(
@@ -48,15 +50,29 @@ exports.handler = async (event, context) => {
           Logger.levels.ROBUST,
           `${event.LogicalResourceId}:${event.RequestType}`
         );
+
         const _repo = process.env.CODECOMMIT_REPO
-        const _s3url = process.env.CODE_URL
-        const _curlCommand = 'curl -o /tmp/smart-product.zip ' + _s3url
-        execSync(_curlCommand);
-        execSync('rm -rf /tmp/smart-product && mkdir /tmp/smart-product && unzip /tmp/smart-product.zip -d /tmp/smart-product')
+        const s3Bucket = process.env.CODE_BUCKET;
+        const s3Key = process.env.CODE_KEY;
+        const codeSource = process.env.CODE_SOURCE;
+        const s3params = {
+          Bucket: s3Bucket,
+          Key: `${s3Key}/${codeSource}`
+        };
+
+        const file = fs.createWriteStream('/tmp/smart-product-solution.zip');
+        let smartProductData = await s3.getObject(s3params).promise();
+        file.write(smartProductData.Body, () => {
+          file.end();
+        });
+
+        execSync('rm -rf /tmp/smart-product && mkdir /tmp/smart-product');
+        let zip = new admZip(`/tmp/${codeSource}`);
+        zip.extractAllTo('/tmp/smart-product', true);
         const data = await walk('/tmp/smart-product')
         let i, j, temparray, chunk = 99;
         let parentCommitId = ''
-        let params = {}
+        let codeCommitParams = {}
         for (i = 0, j = data.length; i < j; i += chunk) {
           temparray = data.slice(i, i + chunk);
           const filesList = []
@@ -68,7 +84,7 @@ exports.handler = async (event, context) => {
             filesList.push(fileDetails)
           }
           if (!parentCommitId) {
-            params = {
+            codeCommitParams = {
               branchName: 'master', /* required */
               repositoryName: _repo, /* required */
               putFiles: filesList,
@@ -77,7 +93,7 @@ exports.handler = async (event, context) => {
             }
           }
           else if (parentCommitId) {
-            params = {
+            codeCommitParams = {
               branchName: 'master', /* required */
               repositoryName: _repo, /* required */
               parentCommitId: parentCommitId,
@@ -89,10 +105,10 @@ exports.handler = async (event, context) => {
 
           Logger.log(
             Logger.levels.ROBUST,
-            `params: ${params}`
+            `params: ${JSON.stringify(codeCommitParams)}`
           );
-          const resp = await codecommit.createCommit(params).promise()
-          parentCommitId = resp.commitId          
+          const resp = await codecommit.createCommit(codeCommitParams).promise()
+          parentCommitId = resp.commitId
         }
 
         const _responseData = {

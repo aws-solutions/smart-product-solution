@@ -270,7 +270,7 @@ export class SmartProductSolutionStack extends cdk.Stack {
         `smart-product-solution/${spConfig.default.version}/smart-product-helper.zip`
       ),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_12_X,
       timeout: cdk.Duration.seconds(300),
       memorySize: 256,
       role: smartProductHelperLambdaRole,
@@ -291,7 +291,7 @@ export class SmartProductSolutionStack extends cdk.Stack {
         `smart-product-solution/${spConfig.default.version}/smart-product-cognito.zip`
       ),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_8_10,
+      runtime: lambda.Runtime.NODEJS_12_X,
       role: smartProductCognitoHelperLambdaRole,
       timeout: cdk.Duration.seconds(60),
       memorySize: 128,
@@ -380,7 +380,8 @@ export class SmartProductSolutionStack extends cdk.Stack {
     //=============================================================================================
     if (spConfig.default.defender.deploy) {
       new SmartProductDeviceDefender(this, 'SmartProductDeviceDefender', {
-        helperFunction: cfn.CustomResourceProvider.lambda(smartProductHelperFunction)
+        helperFunction: cfn.CustomResourceProvider.lambda(smartProductHelperFunction),
+        helperFunctionPolicy: helperPolicy
       })
     }
 

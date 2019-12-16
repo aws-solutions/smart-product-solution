@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "aws-sdk": "*",
+    "adm-zip": "^0.4.13",
     "logger": "file:../logger"
   },
   "main": "index.js",

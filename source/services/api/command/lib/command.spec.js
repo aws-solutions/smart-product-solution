@@ -437,6 +437,7 @@ describe('Command', function() {
         _command
           .createCommand(ticket, deviceId, command)
           .then(data => {
+            AWS.restore('DynamoDB.DocumentClient');
             assert.exists(data.commandId);
             assert.exists(data.userId);
             assert.exists(data.createdAt);
@@ -445,10 +446,8 @@ describe('Command', function() {
             done();
           })
           .catch(err => {
-            done(err);
-          })
-          .finally(() => {
             AWS.restore('DynamoDB.DocumentClient');
+            done(err);
           });
       })
     );
@@ -476,18 +475,17 @@ describe('Command', function() {
         _command
           .createCommand(ticket, deviceId, command)
           .then(_data => {
+            AWS.restore('DynamoDB.DocumentClient');
             done('negative test');
           })
           .catch(err => {
+            AWS.restore('DynamoDB.DocumentClient');
             expect(err).to.be.deep.equal({
               code: 500,
               error: 'CommandCreateFailure',
               message: `Error occurred while attempting to create command for device "${command.deviceId}".`,
             });
             done();
-          })
-          .finally(() => {
-            AWS.restore('DynamoDB.DocumentClient');
           });
       })
     );
@@ -518,18 +516,17 @@ describe('Command', function() {
         _command
           .createCommand(ticket, deviceId, command)
           .then(data => {
+            AWS.restore('DynamoDB.DocumentClient');
             done('negative test');
           })
           .catch(err => {
+            AWS.restore('DynamoDB.DocumentClient');
             expect(err).to.be.deep.equal({
               code: 500,
               error: 'CommandCreateFailure',
               message: `Error occurred while attempting to create command for device "${command.deviceId}".`,
             });
             done();
-          })
-          .finally(() => {
-            AWS.restore('DynamoDB.DocumentClient');
           });
       })
     );
@@ -544,18 +541,17 @@ describe('Command', function() {
       _command
         .createCommand(ticket, deviceId, command)
         .then(data => {
+          AWS.restore('DynamoDB.DocumentClient');
           done('negative test');
         })
         .catch(err => {
+          AWS.restore('DynamoDB.DocumentClient');
           assert.deepEqual(err, {
             code: 500,
             error: 'CommandCreateFailure',
             message: `Error occurred while attempting to create command for device "${deviceId}".`,
           });
           done();
-        })
-        .finally(() => {
-          AWS.restore('DynamoDB.DocumentClient');
         });
     });
 
@@ -569,18 +565,17 @@ describe('Command', function() {
       _command
         .createCommand(ticket, deviceId, command)
         .then(data => {
+          AWS.restore('DynamoDB.DocumentClient');
           done('negative test');
         })
         .catch(err => {
+          AWS.restore('DynamoDB.DocumentClient');
           assert.deepEqual(err, {
             code: 400,
             error: 'MissingRegistration',
             message: `No registration found for device "${deviceId}".`,
           });
           done();
-        })
-        .finally(() => {
-          AWS.restore('DynamoDB.DocumentClient');
         });
     });
 

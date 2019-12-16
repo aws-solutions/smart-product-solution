@@ -27,11 +27,9 @@ cors under the Massachusetts Institute of Technology (MIT) license
 bootstrap under the Massachusetts Institute of Technology (MIT) license
 body-parser under the Massachusetts Institute of Technology (MIT) license
 fs under the ISC license
-chartist under the Massachusetts Institute of Technology (MIT) license
 node-sass under the Massachusetts Institute of Technology (MIT) license
 react under the Massachusetts Institute of Technology (MIT) license
 react-bootstrap under the Massachusetts Institute of Technology (MIT) license
-react-chartist under the Massachusetts Institute of Technology (MIT) license
 react-dom under the Massachusetts Institute of Technology (MIT) license
 react-notification-system under the Massachusetts Institute of Technology (MIT) license
 react-router under the Massachusetts Institute of Technology (MIT) license
@@ -49,5 +47,3 @@ font-awesome under the Massachusetts Institute of Technology (MIT) license
 uuid under the Massachusetts Institute of Technology (MIT) license
 request-promise under the ISC License
 request under the Apache License Version 2.0
-
-The licenses for these third party components are included in LICENSE.txt

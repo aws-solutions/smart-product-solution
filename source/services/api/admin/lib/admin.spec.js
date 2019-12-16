@@ -104,10 +104,6 @@ describe('Admin', function() {
   });
 
   describe('#updateSetting', function() {
-    beforeEach(function() {});
-
-    afterEach(function() {});
-
     it('should return success when update settings succeed', function(done) {
       AWS.mock('DynamoDB.DocumentClient', 'get', function(_params, callback) {
         callback(null, _ddbResult);
@@ -121,14 +117,13 @@ describe('Admin', function() {
       _adminManager
         .updateSetting(_settingId, _setting)
         .then(data => {
+          AWS.restore('DynamoDB.DocumentClient');
           expect(data).to.deep.equal('success');
           done();
         })
         .catch(err => {
-          done(err);
-        })
-        .finally(() => {
           AWS.restore('DynamoDB.DocumentClient');
+          done(err);
         });
     });
 
@@ -171,14 +166,13 @@ describe('Admin', function() {
       _adminManager
         .updateSetting(_settingId, _setting)
         .then(_data => {
+          AWS.restore('DynamoDB.DocumentClient');
           done('invalid failure for negative test');
         })
         .catch(err => {
+          AWS.restore('DynamoDB.DocumentClient');
           expect(err).to.deep.equal(error);
           done();
-        })
-        .finally(() => {
-          AWS.restore('DynamoDB.DocumentClient');
         });
     });
 
@@ -201,14 +195,13 @@ describe('Admin', function() {
       _adminManager
         .updateSetting(_settingId, _setting)
         .then(_data => {
+          AWS.restore('DynamoDB.DocumentClient');
           done('invalid failure for negative test');
         })
         .catch(err => {
+          AWS.restore('DynamoDB.DocumentClient');
           expect(err).to.deep.equal(error);
           done();
-        })
-        .finally(() => {
-          AWS.restore('DynamoDB.DocumentClient');
         });
     });
 
@@ -231,14 +224,13 @@ describe('Admin', function() {
       _adminManager
         .updateSetting(_settingId, _setting)
         .then(_data => {
+          AWS.restore('DynamoDB.DocumentClient');
           done('invalid failure for negative test');
         })
         .catch(err => {
+          AWS.restore('DynamoDB.DocumentClient');
           expect(err).to.deep.equal(error);
           done();
-        })
-        .finally(() => {
-          AWS.restore('DynamoDB.DocumentClient');
         });
     });
   });

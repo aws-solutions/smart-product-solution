@@ -63,7 +63,7 @@ export class SmartProductTelemetry extends cdk.Construct {
         s3Key: `smart-product-solution/${props.solutionVersion}/smart-product-telemetry-service.zip`
       },
       handler: 'index.handler',
-      runtime: 'nodejs8.10',
+      runtime: 'nodejs10.x',
       role: smartProductLambdaRole.roleArn,
       timeout: 60,
       memorySize: 256
