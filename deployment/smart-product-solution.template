@@ -302,7 +302,7 @@ Resources:
                       commands:
                         - echo "This buildspec is based on image - aws/codebuild/standard:2.0"
                         - node --version
-                        - npm install -g cdk@1.18.0
+                        - npm install -g cdk@1.22.0
                         - cdk --version
                         - echo "Installing cfn_nag"
                         - gem install cfn-nag

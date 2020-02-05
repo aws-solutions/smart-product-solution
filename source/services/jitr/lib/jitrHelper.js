@@ -22,10 +22,10 @@
  */
 const Logger = require('logger');
 const AWS = require('aws-sdk');
-const fs = require('fs');
-const util = require('util');
-const exec = util.promisify(require('child_process').exec);
 const moment = require('moment');
+
+// x509 parsing library
+const { Certificate } = require('@fidm/x509');
 
 /**
  * @class Jitr Performs Just-In-Time-Registration with device initial connection
@@ -89,42 +89,27 @@ class JITRHelper {
       apiVersion: '2015-05-28',
     });
     try {
-      await iot
-        .updateCertificate({
-          certificateId: certId,
-          newStatus: 'ACTIVE',
-        })
-        .promise();
+      await iot.updateCertificate({ certificateId: certId, newStatus: 'ACTIVE' }).promise();
       //get certificatePem and read subject to identify common name/thingName
-      const data = await iot
-        .describeCertificate({certificateId: certId})
-        .promise();
-      fs.writeFileSync(
-        '/tmp/deviceCert.pem',
-        data.certificateDescription.certificatePem
-      );
-      // get Thing Name
-      const thingName = await _self.openssl();
-      await iot
-        .attachThingPrincipal({
-          principal: certArn,
-          thingName: thingName,
-        })
-        .promise();
+      const data = await iot.describeCertificate({certificateId: certId}).promise();
+      const thingName = _self.getThingName(data.certificateDescription.certificatePem);
+      await iot.attachThingPrincipal({ principal: certArn, thingName: thingName }).promise();
       await _self._registrationUpdate(thingName);
     } catch (e) {
       throw new Error(e);
     }
   }
 
-  async openssl() {
+  getThingName(pem) {
     try {
-      const data = await exec(
-        'openssl x509 -noout -subject -in /tmp/deviceCert.pem'
-      );
-      const regexCN = /CN=[\w-]+/g; //get CommonName from cert
-      const found = data.stdout.match(regexCN);
-      return found[0].split('=')[1];
+      const thingName = Certificate.fromPEM(Buffer.from(pem)).toJSON().subject.CN;
+      if (thingName === '' || thingName === undefined) {
+        const errorMessage = 'Unable to find common name from the certificate';
+
+        Logger.error(Logger.levels.INFO, errorMessage);
+        throw new Error(errorMessage);
+      }
+      return thingName;
     } catch (e) {
       throw new Error(e);
     }
@@ -159,7 +144,7 @@ class JITRHelper {
           message: `Device ${thing} has not registered.`
         });
       }
-      
+
       let device = devices[0];
       params = {
         TableName: process.env.REGISTRATION_TBL,
@@ -179,7 +164,7 @@ class JITRHelper {
         },
         UpdateExpression: 'SET #A = :a, #U = :u, #S = :s',
       };
-  
+
       await docClient.update(params).promise();
       return Promise.resolve({
         code: 200,

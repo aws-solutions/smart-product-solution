@@ -150,8 +150,8 @@ describe('JITR module', function() {
           'describeCertificate',
           Promise.resolve({certificateDescription: {certificatePem: 'test'}})
         );
-        const _stub = this.stub(_jitrHelper, 'openssl');
-        _stub.resolves('testThing');
+        const _stub = this.stub(_jitrHelper, 'getThingName');
+        _stub.returns('testThing');
         try {
           await _jitrHelper.attachThing('certId', 'certArn');
         } catch (err) {
@@ -199,7 +199,7 @@ describe('JITR module', function() {
     );
 
     it(
-      '#TDD, validate error handling for openssl',
+      '#TDD, validate error handling for getThingName',
       test(async function() {
         const _jitrHelper = new JITRHelper();
         AWS.mock('Iot', 'updateCertificate', Promise.resolve());
@@ -208,33 +208,12 @@ describe('JITR module', function() {
           'describeCertificate',
           Promise.resolve({certificateDescription: {certificatePem: 'test'}})
         );
-        const _stub = this.stub(_jitrHelper, 'openssl');
-        _stub.rejects('openssl error');
+        const _stub = this.stub(_jitrHelper, 'getThingName');
+        _stub.throws('getThingName error');
         try {
           await _jitrHelper.attachThing('certId', 'certArn');
         } catch (err) {
-          assert.deepEqual(err.message, 'openssl error');
-        }
-      })
-    );
-  });
-
-  /**
-   * @unit-test openssl
-   */
-  describe('#openSSL', function() {
-    it('#TDD, validate method', function() {
-      expect(new JITRHelper().openssl).to.be.a('function');
-    });
-
-    it(
-      '#TDD, validate error handling',
-      test(async function() {
-        const _jitrHelper = new JITRHelper();
-        try {
-          await _jitrHelper.openssl();
-        } catch (err) {
-          console.log('Invalid cert error');
+          assert.deepEqual(err.message, 'getThingName error');
         }
       })
     );

@@ -48,7 +48,7 @@ export class SmartProductJITR extends cdk.Construct {
         s3Key: `smart-product-solution/${props.solutionVersion}/smart-product-jitr-service.zip`
       },
       handler: 'index.handler',
-      runtime: 'nodejs8.10',
+      runtime: 'nodejs12.x',
       role: jitrServiceRole.roleArn,
       timeout: 60,
       memorySize: 256,

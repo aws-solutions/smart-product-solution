@@ -98,10 +98,10 @@ export class OwnerWebApp extends cdk.Construct {
     _putConfig.node.addDependency(_copyS3Assets.node.findChild('Default') as cdk.Resource)
     _putConfig.node.addDependency(helperS3Policy.node.findChild('Resource') as cdk.Resource)
 
-    const consoleOriginAccessIdentity = new cloudfront.CfnCloudFrontOriginAccessIdentity(this, 'ConsoleOriginAccessIdentity', {
-      cloudFrontOriginAccessIdentityConfig: {
-        comment: `access-identity-${smartProductWebsiteBucket.bucketName}`
-      }
+    const consoleOriginAccessIdentity = new cloudfront.OriginAccessIdentity(this, 'ConsoleOriginAccessIdentity', {
+
+      comment: `access-identity-${smartProductWebsiteBucket.bucketName}`
+
     })
 
     const consoleDistribution = new cloudfront.CloudFrontWebDistribution(this, 'ConsoleDistribution', {
@@ -109,7 +109,7 @@ export class OwnerWebApp extends cdk.Construct {
       originConfigs: [{
         s3OriginSource: {
           s3BucketSource: smartProductWebsiteBucket,
-          originAccessIdentityId: `${consoleOriginAccessIdentity.ref}`
+          originAccessIdentity: consoleOriginAccessIdentity
         },
         behaviors: [{
           isDefaultBehavior: true,
@@ -147,7 +147,7 @@ export class OwnerWebApp extends cdk.Construct {
       actions: ['s3:GetObject'],
       effect: iam.Effect.ALLOW,
       resources: [`${smartProductWebsiteBucket.bucketArn}/*`],
-      principals: [new iam.CanonicalUserPrincipal(consoleOriginAccessIdentity.attrS3CanonicalUserId)]
+      principals: [new iam.CanonicalUserPrincipal(consoleOriginAccessIdentity.cloudFrontOriginAccessIdentityS3CanonicalUserId)]
     }))
 
     // CFN_NAG Annotations

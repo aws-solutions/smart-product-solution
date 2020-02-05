@@ -6,7 +6,6 @@
     "private": true,
     "dependencies": {
         "moment": "*",
-        "randomstring": "*",
         "underscore": "*",
         "logger": "file:../../resources/logger/",
         "uuid": "*"

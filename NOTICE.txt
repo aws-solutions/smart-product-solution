@@ -26,7 +26,6 @@ express under the Massachusetts Institute of Technology (MIT) license
 cors under the Massachusetts Institute of Technology (MIT) license
 bootstrap under the Massachusetts Institute of Technology (MIT) license
 body-parser under the Massachusetts Institute of Technology (MIT) license
-fs under the ISC license
 node-sass under the Massachusetts Institute of Technology (MIT) license
 react under the Massachusetts Institute of Technology (MIT) license
 react-bootstrap under the Massachusetts Institute of Technology (MIT) license
@@ -38,8 +37,6 @@ react-scripts under the Massachusetts Institute of Technology (MIT) license
 react-toggle under the Massachusetts Institute of Technology (MIT) license
 underscore.js under the Massachusetts Institute of Technology (MIT) license
 moment.js under the Massachusetts Institute of Technology (MIT) license
-shortid under the Massachusetts Institute of Technology (MIT) license
-randomstring under the Massachusetts Institute of Technology (MIT) license
 js-base64 under the Massachusetts Institute of Technology (MIT) license
 jsonwebtoken under the Massachusetts Institute of Technology (MIT) license
 jwk-to-pem under the Apache License Version 2.0
@@ -47,3 +44,6 @@ font-awesome under the Massachusetts Institute of Technology (MIT) license
 uuid under the Massachusetts Institute of Technology (MIT) license
 request-promise under the ISC License
 request under the Apache License Version 2.0
+@fidm/x509 under the Massachusetts Institute of Technology (MIT) license
+
+The licenses for these third party components are included in LICENSE.txt

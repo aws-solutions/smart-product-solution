@@ -50,7 +50,7 @@ export class SmartProductEvent extends cdk.Construct {
         s3Key: `smart-product-solution/${props.solutionVersion}/smart-product-notification-service.zip`
       },
       handler: 'index.handler',
-      runtime: 'nodejs8.10',
+      runtime: 'nodejs12.x',
       role: notificationServiceRole.roleArn,
       timeout: 300,
       memorySize: 256,
@@ -76,7 +76,7 @@ export class SmartProductEvent extends cdk.Construct {
         s3Key: `smart-product-solution/${props.solutionVersion}/smart-product-event-proxy.zip`
       },
       handler: 'index.handler',
-      runtime: 'nodejs8.10',
+      runtime: 'nodejs12.x',
       role: eventProxyRole.roleArn,
       timeout: 60,
       memorySize: 256,

@@ -15,17 +15,17 @@
     "ts-node": "^8.1.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-apigateway": "^1.18.0",
-    "@aws-cdk/aws-cloudfront": "^1.18.0",
-    "@aws-cdk/aws-cognito": "^1.18.0",
-    "@aws-cdk/aws-dynamodb": "^1.18.0",
-    "@aws-cdk/aws-iam": "^1.18.0",
-    "@aws-cdk/aws-iot": "^1.18.0",
-    "@aws-cdk/aws-iotanalytics": "^1.18.0",
-    "@aws-cdk/aws-lambda": "^1.18.0",
-    "@aws-cdk/aws-s3": "^1.18.0",
-    "@aws-cdk/aws-sns": "^1.18.0",
-    "aws-cdk": "^1.18.0",
+    "@aws-cdk/aws-apigateway": "1.22.0",
+    "@aws-cdk/aws-cloudfront": "1.22.0",
+    "@aws-cdk/aws-cognito": "1.22.0",
+    "@aws-cdk/aws-dynamodb": "1.22.0",
+    "@aws-cdk/aws-iam": "1.22.0",
+    "@aws-cdk/aws-iot": "1.22.0",
+    "@aws-cdk/aws-iotanalytics": "1.22.0",
+    "@aws-cdk/aws-lambda": "1.22.0",
+    "@aws-cdk/aws-s3": "1.22.0",
+    "@aws-cdk/aws-sns": "1.22.0",
+    "aws-cdk": "1.22.0",
     "uuid": "^3.3.2"
   }
 }

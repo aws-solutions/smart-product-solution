@@ -9,22 +9,20 @@
   "private": true,
   "dependencies": {
     "authorizer": "file:../../resources/authorizer/",
-    "aws-sdk": "*",
-    "fs": "0.0.1-security",
     "logger": "file:../../resources/logger/",
     "moment": "*",
-    "usage-metrics": "file:../../resources/usage-metrics"
+    "usage-metrics": "file:../../resources/usage-metrics",
+    "@fidm/x509": "^1.2.1"
   },
   "devDependencies": {
     "aws-sdk-mock": "*",
-    "chai": "*",
+    "chai": "^4.2.0",
     "eslint": "^5.16.0",
     "eslint-config-strongloop": "^2.1.0",
-    "mocha": "*",
-    "npm-run-all": "*",
-    "sinon": "*",
-    "sinon-chai": "*",
-    "sinon-test": "^2.4.0"
+    "mocha": "^7.0.0",
+    "sinon": "^8.0.4",
+    "sinon-chai": "^3.4.0",
+    "sinon-test": "^2.4.1"
   },
   "scripts": {
     "pretest": "rm -rf package-lock.json && rm -rf node_modules && npm install",

@@ -10,7 +10,6 @@
         "body-parser": "^1.17.1",
         "express": "^4.15.2",
         "cors": "^2.8.3",
-        "randomstring": "*",
         "underscore": "*",
         "authorizer": "file:../../../resources/authorizer/",
         "logger": "file:../../../resources/logger/"

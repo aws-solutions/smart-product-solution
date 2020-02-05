@@ -8,7 +8,6 @@
     "authorizer": "file:../../resources/authorizer/",
     "logger": "file:../../resources/logger/",
     "moment": "*",
-    "randomstring": "*",
     "underscore": "^1.9.1"
   },
   "devDependencies": {
