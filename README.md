@@ -5,7 +5,7 @@ Smart, connected products have many of the same physical components that product
 
 The Smart Product Solution is a deployable reference architecture demonstrating the "art of the possible" and enabling manufactures to jumpstart development of innovative smart product services. Using the Smart Product Solution, manufactures can rapidly deploy and build upon an open source architecture to enable smart product applications by converting valuable information from the real world into digital data that provides increased visibility to businesses of how users interact their products or services.
 
-For more information and a detailed deployment guide visit the Smart Product solution at https://aws.amazon.com/answers/iot/smart-product-solution/.
+For more information and a detailed implementation guide visit the Smart Product solution at https://docs.aws.amazon.com/solutions/latest/smart-product-solution.
 
 ## Running unit tests for customization
 * Clone the repository, then make the desired code changes
