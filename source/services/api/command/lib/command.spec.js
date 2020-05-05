@@ -11,7 +11,7 @@ AWS.setSDK(path.resolve('./node_modules/aws-sdk'));
 
 let Command = require('./command.js');
 
-describe('Command', function() {
+describe('Command', function () {
   const deviceId = '42adad4d-fdd1-4db0-a501-61cffd0fa3e4';
 
   const command = {
@@ -39,22 +39,22 @@ describe('Command', function() {
     groups: [],
   };
 
-  describe('#getCommands', function() {
-    beforeEach(function() {});
+  describe('#getCommands', function () {
+    beforeEach(function () { });
 
-    afterEach(function() {
+    afterEach(function () {
       AWS.restore('DynamoDB.DocumentClient');
     });
 
-    it('should return device commands when ddb query successful with valid user', function(done) {
-      AWS.mock('DynamoDB.DocumentClient', 'get', function(params, callback) {
+    it('should return device commands when ddb query successful with valid user', function (done) {
+      AWS.mock('DynamoDB.DocumentClient', 'get', function (params, callback) {
         callback(null, {
           userId: ticket.sub,
           deviceId: command.deviceId,
         });
       });
 
-      AWS.mock('DynamoDB.DocumentClient', 'query', function(params, callback) {
+      AWS.mock('DynamoDB.DocumentClient', 'query', function (params, callback) {
         callback(null, {
           Items: [command],
         });
@@ -74,8 +74,8 @@ describe('Command', function() {
         });
     });
 
-    it('should return device commands for particular LastEvaludatedKey when ddb query successful with valid user', function(done) {
-      AWS.mock('DynamoDB.DocumentClient', 'get', function(params, callback) {
+    it('should return device commands for particular LastEvaludatedKey when ddb query successful with valid user', function (done) {
+      AWS.mock('DynamoDB.DocumentClient', 'get', function (params, callback) {
         callback(null, {
           userId: ticket.sub,
           deviceId: command.deviceId,
@@ -83,13 +83,13 @@ describe('Command', function() {
       });
 
       let _calls = 0;
-      AWS.mock('DynamoDB.DocumentClient', 'query', function(params, callback) {
+      AWS.mock('DynamoDB.DocumentClient', 'query', function (params, callback) {
         callback(null, {
           Items: [command],
         });
       });
 
-      let lastevalkey = {key: 'key'};
+      let lastevalkey = { key: 'key' };
       let commandStatus = '';
       let _command = new Command();
       _command
@@ -103,15 +103,15 @@ describe('Command', function() {
         });
     });
 
-    it('should return device commands for specific command status when ddb query successful with valid user', function(done) {
-      AWS.mock('DynamoDB.DocumentClient', 'get', function(params, callback) {
+    it('should return device commands for specific command status when ddb query successful with valid user', function (done) {
+      AWS.mock('DynamoDB.DocumentClient', 'get', function (params, callback) {
         callback(null, {
           userId: ticket.sub,
           deviceId: command.deviceId,
         });
       });
 
-      AWS.mock('DynamoDB.DocumentClient', 'query', function(params, callback) {
+      AWS.mock('DynamoDB.DocumentClient', 'query', function (params, callback) {
         callback(null, {
           Items: [command],
         });
@@ -131,15 +131,15 @@ describe('Command', function() {
         });
     });
 
-    it('should return error information when ddb query fails with valid user', function(done) {
-      AWS.mock('DynamoDB.DocumentClient', 'get', function(params, callback) {
+    it('should return error information when ddb query fails with valid user', function (done) {
+      AWS.mock('DynamoDB.DocumentClient', 'get', function (params, callback) {
         callback(null, {
           userId: ticket.sub,
           deviceId: command.deviceId,
         });
       });
 
-      AWS.mock('DynamoDB.DocumentClient', 'query', function(params, callback) {
+      AWS.mock('DynamoDB.DocumentClient', 'query', function (params, callback) {
         callback('error', null);
       });
 
@@ -161,8 +161,8 @@ describe('Command', function() {
         });
     });
 
-    it('should return error information when registration validation fails', function(done) {
-      AWS.mock('DynamoDB.DocumentClient', 'get', function(params, callback) {
+    it('should return error information when registration validation fails', function (done) {
+      AWS.mock('DynamoDB.DocumentClient', 'get', function (params, callback) {
         callback('error', null);
       });
 
@@ -184,8 +184,8 @@ describe('Command', function() {
         });
     });
 
-    it('should return error information when no registration validation records retrieved', function(done) {
-      AWS.mock('DynamoDB.DocumentClient', 'get', function(params, callback) {
+    it('should return error information when no registration validation records retrieved', function (done) {
+      AWS.mock('DynamoDB.DocumentClient', 'get', function (params, callback) {
         callback(null, []);
       });
 
@@ -207,12 +207,12 @@ describe('Command', function() {
         });
     });
 
-    it('should return success when no registration validation records retrieved but user is admin', function(done) {
-      AWS.mock('DynamoDB.DocumentClient', 'get', function(params, callback) {
+    it('should return success when no registration validation records retrieved but user is admin', function (done) {
+      AWS.mock('DynamoDB.DocumentClient', 'get', function (params, callback) {
         callback(null, []);
       });
 
-      AWS.mock('DynamoDB.DocumentClient', 'query', function(params, callback) {
+      AWS.mock('DynamoDB.DocumentClient', 'query', function (params, callback) {
         callback(null, {
           Items: [command],
         });
@@ -238,17 +238,17 @@ describe('Command', function() {
     });
   });
 
-  describe('#getCommand', function() {
-    beforeEach(function() {});
+  describe('#getCommand', function () {
+    beforeEach(function () { });
 
-    afterEach(function() {
+    afterEach(function () {
       AWS.restore('DynamoDB.DocumentClient');
     });
 
-    it('should return device command when ddb get successful with valid registration', function(done) {
+    it('should return device command when ddb get successful with valid registration', function (done) {
       let _calls = 0;
       ticket.groups = [];
-      AWS.mock('DynamoDB.DocumentClient', 'get', function(params, callback) {
+      AWS.mock('DynamoDB.DocumentClient', 'get', function (params, callback) {
         if (_calls === 0) {
           _calls++;
           callback(null, {
@@ -274,9 +274,9 @@ describe('Command', function() {
         });
     });
 
-    it('should return error information when ddb get returns empty result with valid registration', function(done) {
+    it('should return error information when ddb get returns empty result with valid registration', function (done) {
       let _calls = 0;
-      AWS.mock('DynamoDB.DocumentClient', 'get', function(params, callback) {
+      AWS.mock('DynamoDB.DocumentClient', 'get', function (params, callback) {
         if (_calls === 0) {
           _calls++;
           callback(null, {
@@ -304,9 +304,9 @@ describe('Command', function() {
         });
     });
 
-    it('should return error information when ddb get fails with valid registration', function(done) {
+    it('should return error information when ddb get fails with valid registration', function (done) {
       let _calls = 0;
-      AWS.mock('DynamoDB.DocumentClient', 'get', function(params, callback) {
+      AWS.mock('DynamoDB.DocumentClient', 'get', function (params, callback) {
         if (_calls === 0) {
           _calls++;
           callback(null, {
@@ -334,8 +334,8 @@ describe('Command', function() {
         });
     });
 
-    it('should return error information when registration validation fails', function(done) {
-      AWS.mock('DynamoDB.DocumentClient', 'get', function(params, callback) {
+    it('should return error information when registration validation fails', function (done) {
+      AWS.mock('DynamoDB.DocumentClient', 'get', function (params, callback) {
         callback('error', null);
       });
 
@@ -355,8 +355,8 @@ describe('Command', function() {
         });
     });
 
-    it('should return error information when no registration validation records retrieved', function(done) {
-      AWS.mock('DynamoDB.DocumentClient', 'get', function(params, callback) {
+    it('should return error information when no registration validation records retrieved', function (done) {
+      AWS.mock('DynamoDB.DocumentClient', 'get', function (params, callback) {
         callback(null, []);
       });
       let _command = new Command();
@@ -375,10 +375,10 @@ describe('Command', function() {
         });
     });
 
-    it('should return success when no registration validation records retrieved but user is admin', function(done) {
+    it('should return success when no registration validation records retrieved but user is admin', function (done) {
       let _calls = 0;
       ticket.groups = ['Admin'];
-      AWS.mock('DynamoDB.DocumentClient', 'get', function(params, callback) {
+      AWS.mock('DynamoDB.DocumentClient', 'get', function (params, callback) {
         if (_calls === 0) {
           _calls++;
           callback(null, []);
@@ -406,23 +406,23 @@ describe('Command', function() {
     });
   });
 
-  describe('#createCommand', function() {
-    beforeEach(function() {});
+  describe('#createCommand', function () {
+    beforeEach(function () { });
 
-    afterEach(function() {});
+    afterEach(function () { });
 
     it(
       'should return new device command when ddb put successful with valid registration',
-      test(function(done) {
+      test(function (done) {
         let _command = new Command();
-        AWS.mock('DynamoDB.DocumentClient', 'get', function(params, callback) {
+        AWS.mock('DynamoDB.DocumentClient', 'get', function (params, callback) {
           callback(null, {
             userId: ticket.sub,
             deviceId: command.deviceId,
           });
         });
 
-        AWS.mock('DynamoDB.DocumentClient', 'put', function(params, callback) {
+        AWS.mock('DynamoDB.DocumentClient', 'put', function (params, callback) {
           callback(null, {
             Item: command,
           });
@@ -454,16 +454,16 @@ describe('Command', function() {
 
     it(
       'should return error when shadow update fails',
-      test(function(done) {
+      test(function (done) {
         let _command = new Command();
-        AWS.mock('DynamoDB.DocumentClient', 'get', function(params, callback) {
+        AWS.mock('DynamoDB.DocumentClient', 'get', function (params, callback) {
           callback(null, {
             userId: ticket.sub,
             deviceId: command.deviceId,
           });
         });
 
-        AWS.mock('DynamoDB.DocumentClient', 'put', function(params, callback) {
+        AWS.mock('DynamoDB.DocumentClient', 'put', function (params, callback) {
           callback(null, {
             Item: command,
           });
@@ -492,16 +492,16 @@ describe('Command', function() {
 
     it(
       'should return error when publish on IoT topic fails',
-      test(function(done) {
+      test(function (done) {
         let _command = new Command();
-        AWS.mock('DynamoDB.DocumentClient', 'get', function(params, callback) {
+        AWS.mock('DynamoDB.DocumentClient', 'get', function (params, callback) {
           callback(null, {
             userId: ticket.sub,
             deviceId: command.deviceId,
           });
         });
 
-        AWS.mock('DynamoDB.DocumentClient', 'put', function(params, callback) {
+        AWS.mock('DynamoDB.DocumentClient', 'put', function (params, callback) {
           callback(null, {
             Item: command,
           });
@@ -531,9 +531,9 @@ describe('Command', function() {
       })
     );
 
-    it('should return error when registration validation fails', function(done) {
+    it('should return error when registration validation fails', function (done) {
       ticket.groups = [];
-      AWS.mock('DynamoDB.DocumentClient', 'get', function(params, callback) {
+      AWS.mock('DynamoDB.DocumentClient', 'get', function (params, callback) {
         callback('error', null);
       });
 
@@ -555,9 +555,9 @@ describe('Command', function() {
         });
     });
 
-    it('should return error when no valid registration found', function(done) {
+    it('should return error when no valid registration found', function (done) {
       ticket.groups = [];
-      AWS.mock('DynamoDB.DocumentClient', 'get', function(params, callback) {
+      AWS.mock('DynamoDB.DocumentClient', 'get', function (params, callback) {
         callback(null, []);
       });
 
@@ -579,8 +579,8 @@ describe('Command', function() {
         });
     });
 
-    it('should return error when commandDetails is missing', function(done) {
-      let invliadCommand = {
+    it('should return error when commandDetails is missing', function (done) {
+      let invalidCommand = {
         deviceId: '42adad4d-fdd1-4db0-a501-61cffd0fa3e4',
         commandId: '82bfgd4y-uu81-io10-a602-56cnb0fhs34',
         createdAt: '2018-02-06T20:57:48Z',
@@ -596,7 +596,7 @@ describe('Command', function() {
 
       let _command = new Command();
       _command
-        .createCommand(ticket, deviceId, invliadCommand)
+        .createCommand(ticket, deviceId, invalidCommand)
         .then(() => {
           done('negative test');
         })
@@ -610,8 +610,8 @@ describe('Command', function() {
         });
     });
 
-    it('should return error when shadowDetails is missing', function(done) {
-      let invliadCommand = {
+    it('should return error when shadowDetails is missing', function (done) {
+      let invalidCommand = {
         deviceId: '42adad4d-fdd1-4db0-a501-61cffd0fa3e4',
         commandId: '82bfgd4y-uu81-io10-a602-56cnb0fhs34',
         createdAt: '2018-02-06T20:57:48Z',
@@ -626,7 +626,7 @@ describe('Command', function() {
 
       let _command = new Command();
       _command
-        .createCommand(ticket, deviceId, invliadCommand)
+        .createCommand(ticket, deviceId, invalidCommand)
         .then(() => {
           done('negative test');
         })
@@ -640,8 +640,8 @@ describe('Command', function() {
         });
     });
 
-    it('should return error when command is invalid', function(done) {
-      let invliadCommand = {
+    it('should return error when command is invalid', function (done) {
+      let invalidCommand = {
         deviceId: '42adad4d-fdd1-4db0-a501-61cffd0fa3e4',
         commandId: '82bfgd4y-uu81-io10-a602-56cnb0fhs34',
         createdAt: '2018-02-06T20:57:48Z',
@@ -661,7 +661,7 @@ describe('Command', function() {
 
       let _command = new Command();
       _command
-        .createCommand(ticket, deviceId, invliadCommand)
+        .createCommand(ticket, deviceId, invalidCommand)
         .then(() => {
           done('negative test');
         })
@@ -675,8 +675,8 @@ describe('Command', function() {
         });
     });
 
-    it('should return error when value is not number to set temperature', function(done) {
-      let invliadCommand = {
+    it('should return error when value is not number to set temperature', function (done) {
+      let invalidCommand = {
         deviceId: '42adad4d-fdd1-4db0-a501-61cffd0fa3e4',
         commandId: '82bfgd4y-uu81-io10-a602-56cnb0fhs34',
         createdAt: '2018-02-06T20:57:48Z',
@@ -696,7 +696,7 @@ describe('Command', function() {
 
       let _command = new Command();
       _command
-        .createCommand(ticket, deviceId, invliadCommand)
+        .createCommand(ticket, deviceId, invalidCommand)
         .then(() => {
           done('negative test');
         })
@@ -710,8 +710,8 @@ describe('Command', function() {
         });
     });
 
-    it('should return error when power status is not valid', function(done) {
-      let invliadCommand = {
+    it('should return error when power status is not valid', function (done) {
+      let invalidCommand = {
         deviceId: '42adad4d-fdd1-4db0-a501-61cffd0fa3e4',
         commandId: '82bfgd4y-uu81-io10-a602-56cnb0fhs34',
         createdAt: '2018-02-06T20:57:48Z',
@@ -731,7 +731,7 @@ describe('Command', function() {
 
       let _command = new Command();
       _command
-        .createCommand(ticket, deviceId, invliadCommand)
+        .createCommand(ticket, deviceId, invalidCommand)
         .then(() => {
           done('negative test');
         })
@@ -745,8 +745,8 @@ describe('Command', function() {
         });
     });
 
-    it('should return error when target temperature is not number', function(done) {
-      let invliadCommand = {
+    it('should return error when target temperature is not number', function (done) {
+      let invalidCommand = {
         deviceId: '42adad4d-fdd1-4db0-a501-61cffd0fa3e4',
         commandId: '82bfgd4y-uu81-io10-a602-56cnb0fhs34',
         createdAt: '2018-02-06T20:57:48Z',
@@ -766,7 +766,7 @@ describe('Command', function() {
 
       let _command = new Command();
       _command
-        .createCommand(ticket, deviceId, invliadCommand)
+        .createCommand(ticket, deviceId, invalidCommand)
         .then(() => {
           done('negative test');
         })
@@ -780,8 +780,8 @@ describe('Command', function() {
         });
     });
 
-    it('should return error when target temperature is not within the acceptable number', function(done) {
-      let invliadCommand = {
+    it('should return error when target temperature is not within the acceptable number', function (done) {
+      let invalidCommand = {
         deviceId: '42adad4d-fdd1-4db0-a501-61cffd0fa3e4',
         commandId: '82bfgd4y-uu81-io10-a602-56cnb0fhs34',
         createdAt: '2018-02-06T20:57:48Z',
@@ -801,7 +801,7 @@ describe('Command', function() {
 
       let _command = new Command();
       _command
-        .createCommand(ticket, deviceId, invliadCommand)
+        .createCommand(ticket, deviceId, invalidCommand)
         .then(() => {
           done('negative test');
         })
@@ -816,28 +816,28 @@ describe('Command', function() {
     });
   });
 
-  describe('#shadowUpdate', function() {
-    beforeEach(function() {
+  describe('#shadowUpdate', function () {
+    beforeEach(function () {
     });
 
-    afterEach(function() {
+    afterEach(function () {
       AWS.restore('Iot');
       AWS.restore('IotData');
     });
 
     const _command = new Command();
 
-    it('check for success when IoT APIs successful', function(done) {
+    it('check for success when IoT APIs successful', function (done) {
       AWS.mock(
         'Iot',
         'describeEndpoint',
-        Promise.resolve({endpointAddress: 'testEndpoint.amazonaws.com'})
+        Promise.resolve({ endpointAddress: 'testEndpoint.amazonaws.com' })
       );
 
       AWS.mock(
         'IotData',
         'getThingShadow',
-        Promise.resolve({payload: {version: 1}})
+        Promise.resolve({ payload: { version: 1 } })
       );
 
       AWS.mock(
@@ -856,14 +856,14 @@ describe('Command', function() {
         })
     });
 
-    it('check for error when getThingShadow fails', function(done) {
+    it('check for error when getThingShadow fails', function (done) {
       AWS.mock(
         'Iot',
         'describeEndpoint',
-        Promise.resolve({endpointAddress: 'testEndpoint.amazonaws.com'})
+        Promise.resolve({ endpointAddress: 'testEndpoint.amazonaws.com' })
       );
 
-      AWS.mock('IotData', 'getThingShadow', function(_params, callback) {
+      AWS.mock('IotData', 'getThingShadow', function (_params, callback) {
         callback('error', null);
       });
 
@@ -881,20 +881,20 @@ describe('Command', function() {
         })
     });
 
-    it('check for error when updateThingShadow fails', function(done) {
+    it('check for error when updateThingShadow fails', function (done) {
       AWS.mock(
         'Iot',
         'describeEndpoint',
-        Promise.resolve({endpointAddress: 'testEndpoint.amazonaws.com'})
+        Promise.resolve({ endpointAddress: 'testEndpoint.amazonaws.com' })
       );
 
       AWS.mock(
         'IotData',
         'getThingShadow',
-        Promise.resolve({payload: {version: 1}})
+        Promise.resolve({ payload: { version: 1 } })
       );
 
-      AWS.mock('IotData', 'updateThingShadow', function(_params, callback) {
+      AWS.mock('IotData', 'updateThingShadow', function (_params, callback) {
         callback('error', null);
       });
 
@@ -913,18 +913,18 @@ describe('Command', function() {
     });
   });
 
-  describe('#publishCommand', function() {
-    afterEach(function() {
+  describe('#publishCommand', function () {
+    afterEach(function () {
       AWS.restore('Iot');
       AWS.restore('IotData');
     });
     const _command = new Command();
 
-    it('check for success when IoT APIs successful', function(done) {
+    it('check for success when IoT APIs successful', function (done) {
       AWS.mock(
         'Iot',
         'describeEndpoint',
-        Promise.resolve({endpointAddress: 'testEndpoint.amazonaws.com'})
+        Promise.resolve({ endpointAddress: 'testEndpoint.amazonaws.com' })
       );
 
       AWS.mock(
@@ -943,14 +943,14 @@ describe('Command', function() {
         });
     });
 
-    it('check for error when publish fails on IoT topic', function(done) {
+    it('check for error when publish fails on IoT topic', function (done) {
       AWS.mock(
         'Iot',
         'describeEndpoint',
-        Promise.resolve({endpointAddress: 'testEndpoint.amazonaws.com'})
+        Promise.resolve({ endpointAddress: 'testEndpoint.amazonaws.com' })
       );
 
-      AWS.mock('IotData', 'publish', function(_params, callback) {
+      AWS.mock('IotData', 'publish', function (_params, callback) {
         callback('error', null);
       });
 
