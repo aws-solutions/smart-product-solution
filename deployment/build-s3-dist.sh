@@ -44,8 +44,8 @@ mkdir -p $build_dist_dir
 echo "------------------------------------------------------------------------------"
 echo "[Packing] Templates"
 echo "------------------------------------------------------------------------------"
-echo "cp $template_dir/smart-product-solution.yaml $template_dist_dir/smart-product-solution.template"
-cp $template_dir/smart-product-solution.yaml $template_dist_dir/smart-product-solution.template
+echo "cp $template_dir/smart-product-solution.template $template_dist_dir/smart-product-solution.template"
+cp $template_dir/smart-product-solution.template $template_dist_dir/smart-product-solution.template
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     # Mac OS
