@@ -64,7 +64,7 @@ Parameters:
     Version:
         Description: Solution Version
         Type: String
-        Default: v1.0.1
+        Default: v1.0.17
 
 Metadata:
     AWS::CloudFormation::Interface:
