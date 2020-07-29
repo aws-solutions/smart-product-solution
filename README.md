@@ -27,7 +27,7 @@ _Note:_ You would have to create an S3 bucket with the prefix 'my-bucket-name-<a
 * Now build the distributable:
 ```
 chmod +x ./build-s3-dist.sh
-./build-s3-dist.sh $DIST_OUTPUT_BUCKET $SOLUTION_NAME $$VERSION
+./build-s3-dist.sh $DIST_OUTPUT_BUCKET $SOLUTION_NAME $VERSION
 ```
 
 * Deploy the distributable to an Amazon S3 bucket in your account. _Note:_ you must have the AWS Command Line Interface installed.
