@@ -21,6 +21,7 @@ chmod +x ./run-unit-tests.sh
 ```
 export DIST_OUTPUT_BUCKET=my-bucket-name # bucket where customized code will reside
 export VERSION=my-version # version number for the customized code
+export SOLUTION_NAME=my-smart-solution # user defined solution's name
 ```
 _Note:_ You would have to create an S3 bucket with the prefix 'my-bucket-name-<aws_region>'; aws_region is where you are testing the customized solution. Also, the assets in bucket should be publicly accessible.
 
