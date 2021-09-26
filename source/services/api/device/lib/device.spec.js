@@ -9,7 +9,7 @@ AWS.setSDK(path.resolve('./node_modules/aws-sdk'));
 
 let DeviceManager = require('./device.js');
 
-describe('Device', function() {
+describe('Device', function () {
   const ticket = {
     auth_status: 'authorized',
     userid: 'test_user',
@@ -39,9 +39,9 @@ describe('Device', function() {
     thingId: "23da892a-0268-49d8-9a7b-c8548b4605f1",
     thingArn: "arn:aws:iot:region:accountId:thing/something",
     attributes: {
-        modelNumber: "model-number",
-        userId: "085e4e22-bd06-4ca6-b913-SUBSAMPLE",
-        deviceName: "deviceName"
+      modelNumber: "model-number",
+      userId: "085e4e22-bd06-4ca6-b913-SUBSAMPLE",
+      deviceName: "deviceName"
     },
     thingName: "something",
     defaultClientId: "something",
@@ -66,15 +66,15 @@ describe('Device', function() {
     nextToken: null,
   };
 
-  describe('#getDevices', function() {
-    beforeEach(function() {});
+  describe('#getDevices', function () {
+    beforeEach(function () { });
 
-    afterEach(function() {
+    afterEach(function () {
       AWS.restore('Iot');
     });
 
-    it('should return devices when searching index is successful with valid user', function(done) {
-      AWS.mock('Iot', 'searchIndex', function(_params, callback) {
+    it('should return devices when searching index is successful with valid user', function (done) {
+      AWS.mock('Iot', 'searchIndex', function (_params, callback) {
         callback(null, devices);
       });
 
@@ -90,14 +90,14 @@ describe('Device', function() {
         });
     });
 
-    it('should return SearchDeviceFailure error when IoT search fails', function(done) {
+    it('should return SearchDeviceFailure error when IoT search fails', function (done) {
       let error = {
         code: 500,
         error: 'DevicesRetrieveFailure',
         message: `Error occurred while attempting to search devices.`
       };
 
-      AWS.mock('Iot', 'searchIndex', function(_params, callback) {
+      AWS.mock('Iot', 'searchIndex', function (_params, callback) {
         callback('error', null);
       });
 
@@ -114,15 +114,15 @@ describe('Device', function() {
     });
   });
 
-  describe('#getDevice', function() {
-    beforeEach(function() {});
+  describe('#getDevice', function () {
+    beforeEach(function () { });
 
-    afterEach(function() {
+    afterEach(function () {
       AWS.restore('DynamoDB.DocumentClient');
     });
 
-    it('should return device information when ddb get successful', function(done) {
-      AWS.mock('DynamoDB.DocumentClient', 'get', function(_params, callback) {
+    it('should return device information when ddb get successful', function (done) {
+      AWS.mock('DynamoDB.DocumentClient', 'get', function (_params, callback) {
         callback(null, device);
       });
 
@@ -138,8 +138,8 @@ describe('Device', function() {
         });
     });
 
-    it('should return error information when ddb get returns empty result', function(done) {
-      AWS.mock('DynamoDB.DocumentClient', 'get', function(_params, callback) {
+    it('should return error information when ddb get returns empty result', function (done) {
+      AWS.mock('DynamoDB.DocumentClient', 'get', function (_params, callback) {
         callback(null, {});
       });
 
@@ -159,14 +159,14 @@ describe('Device', function() {
         });
     });
 
-    it('should return error information when ddb get fails', function(done) {
+    it('should return error information when ddb get fails', function (done) {
       let error = {
         code: 500,
         error: 'DeviceRetrieveFailure',
         message: `Error occurred while attempting to retrieve device "${device.Item.deviceId}".`
       };
 
-      AWS.mock('DynamoDB.DocumentClient', 'get', function(_params, callback) {
+      AWS.mock('DynamoDB.DocumentClient', 'get', function (_params, callback) {
         callback(error, null);
       });
 
@@ -174,7 +174,7 @@ describe('Device', function() {
       _deviceManager
         .getDevice(ticket, device.Item.deviceId)
         .then(_data => {
-          done('invalid failur for negative test');
+          done('invalid failure for negative test');
         })
         .catch(err => {
           assert.deepEqual(err, error);
@@ -183,7 +183,7 @@ describe('Device', function() {
     });
   });
 
-  describe('#deleteDevice', function() {
+  describe('#deleteDevice', function () {
     const error = {
       code: 500,
       error: 'DeviceDeleteFailure',
@@ -192,42 +192,42 @@ describe('Device', function() {
 
     const principals = {
       principals: [
-          "arn:aws:iot:region:xxxxxxxxxxxx:cert/some-cert-example-id"
+        "arn:aws:iot:region:xxxxxxxxxxxx:cert/some-cert-example-id"
       ]
     };
 
-    beforeEach(function() {});
+    beforeEach(function () { });
 
-    afterEach(function() {
+    afterEach(function () {
       AWS.restore('DynamoDB.DocumentClient');
     });
 
-    it('should return when device deletes successfully', function(done) {
-      AWS.mock('DynamoDB.DocumentClient', 'get', function(_params, callback) {
+    it('should return when device deletes successfully', function (done) {
+      AWS.mock('DynamoDB.DocumentClient', 'get', function (_params, callback) {
         callback(null, device);
       });
-      AWS.mock('DynamoDB.DocumentClient', 'put', function(_params, callback) {
+      AWS.mock('DynamoDB.DocumentClient', 'put', function (_params, callback) {
         callback(null, 'success');
       });
-      AWS.mock('Iot', 'describeThing', function(_params, callback) {
+      AWS.mock('Iot', 'describeThing', function (_params, callback) {
         callback(null, iotDevice);
       });
-      AWS.mock('Iot', 'listThingPrincipals', function(_params, callback) {
+      AWS.mock('Iot', 'listThingPrincipals', function (_params, callback) {
         callback(null, principals);
       });
-      AWS.mock('Iot', 'detachThingPrincipal', function(_params, callback) {
+      AWS.mock('Iot', 'detachThingPrincipal', function (_params, callback) {
         callback(null, 'success');
       });
-      AWS.mock('Iot', 'updateCertificate', function(_params, callback) {
+      AWS.mock('Iot', 'updateCertificate', function (_params, callback) {
         callback(null, 'success');
       });
-      AWS.mock('Iot', 'deleteCertificate', function(_params, callback) {
+      AWS.mock('Iot', 'deleteCertificate', function (_params, callback) {
         callback(null, 'success');
       });
-      AWS.mock('Iot', 'deletePolicy', function(_params, callback) {
+      AWS.mock('Iot', 'deletePolicy', function (_params, callback) {
         callback(null, 'success');
-      });      
-      AWS.mock('Iot', 'deleteThing', function(_params, callback) {
+      });
+      AWS.mock('Iot', 'deleteThing', function (_params, callback) {
         callback(null, 'success');
       });
 
@@ -245,12 +245,12 @@ describe('Device', function() {
         });
     });
 
-    it('should return error information when the device does not exist', function(done) {
-      AWS.mock('DynamoDB.DocumentClient', 'get', function(_params, callback) {
+    it('should return error information when the device does not exist', function (done) {
+      AWS.mock('DynamoDB.DocumentClient', 'get', function (_params, callback) {
         callback(null, {});
       });
-      AWS.mock('Iot', 'describeThing', function(_params, callback) {
-        callback({code: 'ResourceNotFoundException'}, null);
+      AWS.mock('Iot', 'describeThing', function (_params, callback) {
+        callback({ code: 'ResourceNotFoundException' }, null);
       });
 
       let _deviceManager = new DeviceManager();
@@ -258,7 +258,7 @@ describe('Device', function() {
         .deleteDevice(ticket, device.Item.deviceId)
         .then(_data => {
           AWS.restore('Iot');
-          done('invalid failur for negative test');
+          done('invalid failure for negative test');
         })
         .catch(err => {
           AWS.restore('Iot');
@@ -271,8 +271,8 @@ describe('Device', function() {
         });
     });
 
-    it('should return error information when ddb error occurs', function(done) {
-      AWS.mock('DynamoDB.DocumentClient', 'get', function(_params, callback) {
+    it('should return error information when ddb error occurs', function (done) {
+      AWS.mock('DynamoDB.DocumentClient', 'get', function (_params, callback) {
         callback('error', null);
       });
 
@@ -280,7 +280,7 @@ describe('Device', function() {
       _deviceManager
         .deleteDevice(ticket, device.Item.deviceId)
         .then(_data => {
-          done('invalid failur for negative test');
+          done('invalid failure for negative test');
         })
         .catch(err => {
           expect(err).to.deep.equal(error);
@@ -288,32 +288,32 @@ describe('Device', function() {
         });
     });
 
-    it('should return error information when iot error occurs', function(done) {
-      AWS.mock('DynamoDB.DocumentClient', 'get', function(_params, callback) {
+    it('should return error information when iot error occurs', function (done) {
+      AWS.mock('DynamoDB.DocumentClient', 'get', function (_params, callback) {
         callback(null, device);
       });
-      AWS.mock('DynamoDB.DocumentClient', 'put', function(_params, callback) {
+      AWS.mock('DynamoDB.DocumentClient', 'put', function (_params, callback) {
         callback(null, 'success');
       });
-      AWS.mock('Iot', 'describeThing', function(_params, callback) {
+      AWS.mock('Iot', 'describeThing', function (_params, callback) {
         callback(null, iotDevice);
       });
-      AWS.mock('Iot', 'listThingPrincipals', function(_params, callback) {
+      AWS.mock('Iot', 'listThingPrincipals', function (_params, callback) {
         callback(null, principals);
       });
-      AWS.mock('Iot', 'detachThingPrincipal', function(_params, callback) {
+      AWS.mock('Iot', 'detachThingPrincipal', function (_params, callback) {
         callback(null, 'success');
       });
-      AWS.mock('Iot', 'updateCertificate', function(_params, callback) {
+      AWS.mock('Iot', 'updateCertificate', function (_params, callback) {
         callback(null, 'success');
       });
-      AWS.mock('Iot', 'deleteCertificate', function(_params, callback) {
+      AWS.mock('Iot', 'deleteCertificate', function (_params, callback) {
         callback(null, 'success');
       });
-      AWS.mock('Iot', 'deletePolicy', function(_params, callback) {
+      AWS.mock('Iot', 'deletePolicy', function (_params, callback) {
         callback(null, 'success');
-      });      
-      AWS.mock('Iot', 'deleteThing', function(_params, callback) {
+      });
+      AWS.mock('Iot', 'deleteThing', function (_params, callback) {
         callback('error', null);
       });
 
@@ -322,7 +322,7 @@ describe('Device', function() {
         .deleteDevice(ticket, device.Item.deviceId)
         .then(_data => {
           AWS.restore('Iot');
-          done('invalid failur for negative test');
+          done('invalid failure for negative test');
         })
         .catch(err => {
           AWS.restore('Iot');
