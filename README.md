@@ -1,3 +1,7 @@
+# Deprecation Notice
+
+This AWS Solution has been archived and is no longer maintained by AWS. To discover other solutions, please visit the [AWS Solutions Library](https://aws.amazon.com/solutions/).
+
 ## Smart Product Solution
 Smart, connected products are completely transforming the value chain. As a result, companies are redefining their industries and rethinking nearly everything they do. The ability for smart products to monitor themselves, their environments and enable remote control, optimization, and automation allows manufacturers to think about their business in new ways. Freshly available features and functions can be delivered directly to their products and users to improve revenue and margins.
 
